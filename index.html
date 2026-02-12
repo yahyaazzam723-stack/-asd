@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>G-PRO ULTRA | SECURE V4.0</title>
+    <title>G-PRO ULTRA | SECURE V39</title>
     <style>
         :root {
             --glass: rgba(255, 255, 255, 0.05);
@@ -17,16 +17,19 @@
         * { box-sizing: border-box; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); font-family: 'Segoe UI', Tahoma, sans-serif; }
         body { margin: 0; background: #020617; color: #fff; display: flex; min-height: 100vh; overflow-x: hidden; }
 
-        /* شاشات القفل */
-        .full-lock { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .modal-content { background: #0f172a; padding: 30px; border-radius: 25px; width: 420px; border: 1px solid var(--neon-blue); text-align: center; }
+        /* شاشات القفل الكاملة */
+        .full-lock { position: fixed; inset: 0; background: #020617; display: flex; align-items: center; justify-content: center; z-index: 10000; }
+        .modal-content { background: #0f172a; padding: 30px; border-radius: 25px; width: 420px; border: 1px solid var(--neon-blue); text-align: center; box-shadow: 0 0 30px rgba(0,210,255,0.2); }
         
-        /* شاشة التفعيل */
-        .license-lock { z-index: 10001; }
-        .license-card { border: 2px solid var(--neon-red) !important; }
-        .hwid-display { background: #000; color: var(--neon-blue); padding: 12px; border-radius: 10px; font-family: monospace; margin: 15px 0; border: 1px solid var(--glass-border); cursor: pointer; }
+        /* طبقات الـ Z-index لإصلاح التداخل */
+        #license-screen { z-index: 20000; } /* الأعلى دائماً */
+        #login-screen { z-index: 15000; }
+        #open-shift-screen { z-index: 12000; }
 
-        /* العناصر الأساسية */
+        .license-card { border: 2px solid var(--neon-red) !important; box-shadow: 0 0 30px rgba(255,0,60,0.2); }
+        .hwid-display { background: #000; color: var(--neon-blue); padding: 12px; border-radius: 8px; font-family: monospace; margin: 15px 0; border: 1px solid var(--glass-border); font-size: 1.1rem; cursor: pointer; }
+
+        /* ستايل النظام الأساسي */
         .sidebar { width: 270px; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(40px); padding: 25px 15px; height: 100vh; position: fixed; border-left: 1px solid var(--glass-border); z-index: 1000; }
         .main-content { margin-right: 270px; padding: 35px; width: calc(100% - 270px); }
         .nav-item { padding: 14px 15px; cursor: pointer; border-radius: 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; color: #94a3b8; font-weight: 600; }
@@ -40,9 +43,10 @@
         .btn-green { background: var(--neon-green); color: #000; }
         .btn-red { background: var(--neon-red); color: #fff; }
         
-        input, select { background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border); color: #fff; padding: 12px; border-radius: 10px; width: 100%; margin-bottom: 10px; outline: none; }
+        input, select { background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border); color: #fff; padding: 12px; border-radius: 10px; width: 100%; margin-bottom: 10px; text-align: center; }
         .hidden { display: none !important; }
-        #toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 20000; pointer-events: none; }
+
+        #toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 30000; pointer-events: none; }
         .toast { background: var(--neon-green); color: #000; padding: 12px 30px; border-radius: 50px; font-weight: 900; margin-top: 10px; }
     </style>
 </head>
@@ -50,19 +54,21 @@
 
     <div id="toast-container"></div>
 
-    <div id="license-screen" class="full-lock license-lock hidden">
+    <div id="license-screen" class="full-lock hidden">
         <div class="modal-content license-card">
-            <h2 style="color:var(--neon-red)">تفعيل النسخة 🔒</h2>
-            <p>أرسل هذا الكود للمطور لتفعيل جهازك:</p>
-            <div id="display-hwid" class="hwid-display" onclick="copyHWID()">--جاري التوليد--</div>
-            <input type="text" id="license-input" placeholder="ضع كود التفعيل هنا">
-            <button class="btn-green" onclick="handleActivation()">تفعيل الآن ✅</button>
+            <h2 style="color:var(--neon-red)">النسخة غير مفعلة 🔒</h2>
+            <p>يرجى إرسال رقم الجهاز للمطور لتفعيل اشتراكك:</p>
+            <div id="display-hwid" class="hwid-display" onclick="copyHWID()">--جارِ التحميل--</div>
+            <input type="text" id="license-input" placeholder="أدخل كود التفعيل هنا">
+            <button class="btn-green" onclick="handleActivation()">تفعيل النظام ✅</button>
+            <p style="font-size: 0.7rem; opacity: 0.5; margin-top: 10px;">G-PRO PROTECTION V4.0</p>
         </div>
     </div>
 
     <div id="login-screen" class="full-lock">
         <div class="modal-content">
-            <h1 style="color:var(--neon-blue)">G-PRO LOGIN</h1>
+            <h1 style="color:var(--neon-blue)">G-PRO SYSTEM</h1>
+            <p>سجل دخولك لمتابعة العمل</p>
             <select id="login-u-list"></select>
             <input type="password" id="login-p" placeholder="كلمة السر">
             <button class="btn-blue" onclick="handleLogin()">دخول النظام</button>
@@ -71,9 +77,9 @@
 
     <div id="open-shift-screen" class="full-lock hidden">
         <div class="modal-content">
-            <h2 style="color:var(--neon-green)">افتتاح الشفت 💰</h2>
+            <h2 style="color:var(--neon-green)">رصيد افتتاح الشفت</h2>
             <input type="number" id="drawer-amount" placeholder="المبلغ الموجود بالدرج">
-            <button class="btn-green" onclick="startShift()">تأكيد وبدء العمل</button>
+            <button class="btn-green" onclick="startShift()">تأكيد الافتتاح</button>
         </div>
     </div>
 
@@ -90,36 +96,27 @@
         <div id="main-page" class="page">
             <div class="grid" id="pc-grid"></div>
         </div>
-
         <div id="settings-page" class="page hidden">
-            <div class="grid">
-                <div class="glass-card">
-                    <h3>⚙️ الإعدادات</h3>
-                    <input type="text" id="set-shop-name" placeholder="اسم المحل">
-                    <button class="btn-blue" onclick="updateShopInfo()">حفظ</button>
-                </div>
-                <div class="glass-card">
-                    <h3>🖥️ الأجهزة</h3>
-                    <button class="btn-green" onclick="addNewPC()">إضافة جهاز جديد +</button>
-                </div>
+            <div class="glass-card">
+                <h3>الإعدادات</h3>
+                <button class="btn-green" onclick="addNewPC()">إضافة جهاز جديد +</button>
             </div>
         </div>
     </main>
 
     <script>
-        // --- إعدادات الأمان ---
         const SECRET_SALT = "GPRO_SECURE_2026"; 
 
         let db = JSON.parse(localStorage.getItem('GPRO_V39')) || {
             shop: { name: "G-PRO CINEMA" },
             staff: [{u: "مدير", p: "123"}],
-            devices: [], currentSales: 0, startDrawer: 0, 
-            isShiftOpen: false, defPrice: 25000,
+            devices: [], menu: [], 
+            currentSales: 0, startDrawer: 0, isShiftOpen: false,
             licenseExpiry: "2000-01-01",
-            hardwareID: 'GPRO-' + Math.random().toString(36).substr(2, 7).toUpperCase()
+            hardwareID: 'GPRO-' + Math.random().toString(36).substr(2, 9).toUpperCase()
         };
 
-        // --- نظام التراخيص ---
+        // --- وظائف الحماية ---
         function checkSubscription() {
             const today = new Date();
             const expiry = new Date(db.licenseExpiry);
@@ -127,9 +124,10 @@
                 document.getElementById('license-screen').classList.remove('hidden');
                 document.getElementById('display-hwid').innerText = db.hardwareID;
                 return false;
+            } else {
+                document.getElementById('license-screen').classList.add('hidden');
+                return true;
             }
-            document.getElementById('license-screen').classList.add('hidden');
-            return true;
         }
 
         function handleActivation() {
@@ -140,21 +138,21 @@
                 if (parts[0] === db.hardwareID && parts[2] === SECRET_SALT) {
                     db.licenseExpiry = parts[1];
                     save();
-                    alert("✅ تم التفعيل بنجاح! سيتم إعادة تشغيل النظام.");
+                    alert("✅ تم التفعيل بنجاح!");
                     location.reload();
-                } else { alert("❌ كود غير صحيح."); }
-            } catch(e) { alert("❌ كود تالف."); }
+                } else { alert("❌ الكود غير صحيح لهذا الجهاز"); }
+            } catch(e) { alert("❌ تنسيق الكود خاطئ"); }
         }
 
-        // --- نظام الدخول والشفت ---
         function handleLogin() {
-            if (!checkSubscription()) return;
+            if (!checkSubscription()) return; // منع الدخول إذا لم يتم التفعيل
 
             let u = document.getElementById('login-u-list').value;
             let p = document.getElementById('login-p').value;
             let user = db.staff.find(s => s.u === u && s.p === p);
             
             if(user) {
+                db.currentUser = u;
                 document.getElementById('login-screen').classList.add('hidden');
                 if(!db.isShiftOpen) {
                     document.getElementById('open-shift-screen').classList.remove('hidden');
@@ -165,40 +163,27 @@
         }
 
         function startShift() {
-            let val = document.getElementById('drawer-amount').value;
-            if(!val) return alert("ادخل المبلغ");
-            db.startDrawer = parseInt(val);
+            let amt = document.getElementById('drawer-amount').value;
+            if(!amt) return alert("يرجى إدخال المبلغ بالدرج");
+            db.startDrawer = parseInt(amt);
             db.isShiftOpen = true;
             document.getElementById('open-shift-screen').classList.add('hidden');
             save();
             render();
-            showToast("تم فتح الشفت");
+            showToast("تم فتح الشفت ✅");
         }
 
-        // --- الوظائف العامة ---
         function save() { localStorage.setItem('GPRO_V39', JSON.stringify(db)); }
-        function showToast(m) { 
-            let t=document.createElement('div'); t.className='toast'; t.innerText=m; 
-            document.getElementById('toast-container').appendChild(t); setTimeout(()=>t.remove(),2000); 
-        }
-
+        
         function render() {
             document.getElementById('login-u-list').innerHTML = db.staff.map(s => `<option value="${s.u}">${s.u}</option>`).join('');
             document.getElementById('shop-name-side').innerText = db.shop.name;
             document.getElementById('pc-grid').innerHTML = db.devices.map(d => `
                 <div class="glass-card">
                     <b>${d.name}</b>
-                    <div style="font-size:1.2rem; margin:10px 0">${d.active ? 'لعب جارٍ' : 'متاح'}</div>
-                    <button class="btn-green" onclick="alert('بدء اللعب لـ ${d.name}')">تشغيل</button>
+                    <p>${d.active ? 'جارِ اللعب' : 'متاح'}</p>
                 </div>
             `).join('');
-        }
-
-        function showPage(p, el) {
-            document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));
-            document.getElementById(p+'-page').classList.remove('hidden');
-            document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
-            el.classList.add('active');
         }
 
         function addNewPC() {
@@ -206,14 +191,28 @@
             save(); render();
         }
 
-        function copyHWID() {
-            navigator.clipboard.writeText(db.hardwareID);
-            showToast("تم نسخ الكود ✅");
+        function showPage(p, el) {
+            document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));
+            document.getElementById(p+'-page').classList.remove('hidden');
         }
 
-        // التشغيل التلقائي
-        checkSubscription();
-        render();
+        function showToast(m) {
+            let t = document.createElement('div'); t.className = 'toast'; t.innerText = m;
+            document.getElementById('toast-container').appendChild(t);
+            setTimeout(() => t.remove(), 2500);
+        }
+
+        function copyHWID() {
+            navigator.clipboard.writeText(db.hardwareID);
+            showToast("تم نسخ رقم الجهاز ✅");
+        }
+
+        // تشغيل الفحص عند التحميل
+        window.onload = () => {
+            checkSubscription();
+            render();
+        };
+
     </script>
 </body>
 </html>
