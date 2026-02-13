@@ -17,6 +17,10 @@
         * { box-sizing: border-box; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); font-family: 'Segoe UI', Tahoma, sans-serif; }
         body { margin: 0; background: #020617; color: #fff; display: flex; min-height: 100vh; overflow-x: hidden; }
 
+        /* ستايل شاشة قفل يحيى */
+        #yahya-lock-screen { position: fixed; inset: 0; background: #020617; z-index: 999999; display: flex; align-items: center; justify-content: center; }
+        .auth-card { background: #0f172a; padding: 35px; border-radius: 25px; border: 2px solid var(--neon-gold); width: 400px; text-align: center; }
+
         .sidebar { width: 270px; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(40px); padding: 25px 15px; height: 100vh; position: fixed; border-left: 1px solid var(--glass-border); z-index: 1000; }
         .logo-box { width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--neon-blue); margin: 0 auto 15px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #000; box-shadow: 0 0 15px var(--neon-blue); }
         .logo-box img { width: 100%; height: 100%; object-fit: cover; }
@@ -49,26 +53,24 @@
         #toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 20000; pointer-events: none; }
         .toast { background: var(--neon-green); color: #000; padding: 12px 30px; border-radius: 50px; font-weight: 900; margin-top: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .hidden { display: none !important; }
-
         .admin-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid var(--glass-border); margin-bottom: 5px; background: rgba(0,0,0,0.2); border-radius: 8px; }
-
-        /* شاشة الحماية */
-        #subscription-screen { position: fixed; inset: 0; background: #020617; z-index: 99999; display: flex; align-items: center; justify-content: center; }
-        #lic-count-down { color: var(--neon-gold); font-family: monospace; font-size: 0.9rem; margin-top: 5px; border: 1px solid var(--neon-gold); padding: 4px; border-radius: 8px; background: rgba(245, 158, 11, 0.05); }
     </style>
 </head>
 <body>
 
-    <div id="subscription-screen" class="hidden">
-        <div class="modal-content">
-            <h1 style="color:var(--neon-blue)">تفعيل G-PRO ULTRA</h1>
-            <input type="text" id="reg-shop-name" placeholder="أدخل اسم المحل">
-            <div id="display-hwid" style="color:var(--neon-green); font-family:monospace; margin:15px 0; padding:10px; background:rgba(0,0,0,0.3); border-radius:10px; border:1px dashed var(--neon-green)"></div>
-            <button class="btn-blue" onclick="requestLic()">طلب كود التفعيل 📤</button>
-            <p id="req-sent-msg" style="color:var(--neon-green); font-size:0.8rem; display:none">تم إرسال الطلب، بانتظار الكود...</p>
-            <hr style="border:0; border-top:1px solid var(--glass-border); margin:15px 0">
-            <input type="text" id="license-input" placeholder="أدخل الكود المستلم">
-            <button class="btn-green" onclick="applyLic()">تفعيل الآن ✅</button>
+    <div id="yahya-lock-screen" class="hidden">
+        <div class="auth-card">
+            <h1 style="color:var(--neon-gold)">YAHYA G-PRO</h1>
+            <p style="opacity: 0.7; font-size: 0.9rem;">نظام غير مفعل - اطلب الاشتراك</p>
+            <div id="request-fields">
+                <input type="text" id="req-shop-name" placeholder="اسم المحل">
+                <input type="text" id="req-phone" placeholder="رقم الجوال">
+                <button class="btn-blue" onclick="sendYahyaOrder()">إرسال طلب اشتراك 🚀</button>
+            </div>
+            <hr style="margin:20px 0; opacity:0.1">
+            <input type="text" id="activation-key" placeholder="أدخل كود التفعيل">
+            <button class="btn-green" onclick="verifyYahyaKey()">تفعيل النظام ✅</button>
+            <p id="lock-msg" style="color:var(--neon-red); font-size:0.8rem; margin-top:10px"></p>
         </div>
     </div>
 
@@ -98,8 +100,7 @@
             <span id="logo-text" style="font-size:2.5rem; font-weight:900; color:var(--neon-blue)">G</span>
         </div>
         <h2 id="shop-name-side" style="text-align:center; color:var(--neon-blue)">G-PRO</h2>
-        <div id="lic-count-down" style="text-align:center">باقي: --:--:--</div>
-        <nav style="margin-top:10px">
+        <nav>
             <div class="nav-item active" onclick="showPage('main', this)">🖥️ الشاشات</div>
             <div class="nav-item" onclick="showPage('cash', this)">💰 الخزينة</div>
             <div class="nav-item" onclick="showPage('reports', this)">📜 السجلات</div>
@@ -179,7 +180,6 @@
                 <div class="glass-card"><h3>🖥️ الأجهزة</h3><button class="btn-green" onclick="addNewPC()">إضافة شاشة +</button></div>
                 <div class="glass-card" style="border: 1px solid var(--neon-red)">
                     <h3 style="color: var(--neon-red)">المنطقة الخطرة ⛔</h3>
-                    <p style="font-size: 0.8rem; opacity: 0.7">سيتم حذف كل البيانات وإرجاع النظام لحالته الأولى</p>
                     <button class="btn-red" onclick="factoryReset()">إعادة ضبط المصنع ⚠️</button>
                 </div>
             </div>
@@ -189,65 +189,62 @@
     <div id="modal-start" class="modal"><div class="modal-content"><h3>🎮 تشغيل جهاز</h3><input type="text" id="c-name" placeholder="اسم الزبون"><button class="btn-green" onclick="confirmStart()">بدء</button><button onclick="closeModal('modal-start')">إلغاء</button></div></div>
     <div id="modal-book" class="modal"><div class="modal-content"><h3>📅 حجز مؤقت</h3><input type="text" id="b-name" placeholder="اسم الحاجز"><button class="btn-red" onclick="confirmBooking()">تأكيد حجز (30 د)</button><button onclick="closeModal('modal-book')">إلغاء</button></div></div>
     <div id="modal-menu" class="modal"><div class="modal-content"><h3>🛒 المنيو</h3><div id="menu-items-list" style="display:grid; grid-template-columns:1fr 1fr; gap:10px"></div><button onclick="closeModal('modal-menu')">إغلاق</button></div></div>
-    <div id="modal-invoice" class="modal"><div class="modal-content"><h2>🧾 التصفية</h2><div id="invoice-data" style="text-align:right; margin-bottom:15px"></div><h2 id="net-total" style="color:var(--neon-green)">0</h2><button class="btn-red" id="confirm-finish-btn">إنهاء الحساب</button><button class="btn-outline" onclick="closeModal('modal-invoice')" style="margin-top:10px">إلغاء / عودة للعب ↩️</button></div></div>
+    <div id="modal-invoice" class="modal">
+        <div class="modal-content">
+            <h2>🧾 التصفية</h2>
+            <div id="invoice-data" style="text-align:right; margin-bottom:15px"></div>
+            <h2 id="net-total" style="color:var(--neon-green)">0</h2>
+            <button class="btn-red" id="confirm-finish-btn">إنهاء الحساب</button>
+            <button class="btn-outline" onclick="closeModal('modal-invoice')" style="margin-top:10px">إلغاء</button>
+        </div>
+    </div>
 
     <script>
-        // --- نظام الحماية ---
-        const MY_HWID = localStorage.getItem('G_HWID') || (()=>{
-            let h = "GPRO-" + Math.random().toString(36).substr(2, 9).toUpperCase();
-            localStorage.setItem('G_HWID', h); return h;
-        })();
+        // --- [ نظام حماية يحيى - الربط مع لوحة المسؤول ] ---
         
-        function checkSubscription() {
-            const lic = localStorage.getItem('G_LIC');
-            const screen = document.getElementById('subscription-screen');
-            document.getElementById('display-hwid').innerText = "رقم جهازك: " + MY_HWID;
-            if(!lic) { screen.classList.remove('hidden'); return; }
-            try {
-                const dec = atob(lic.split('').reverse().join('')).split('|');
-                const exp = new Date(dec[1]);
-                if(dec[0] !== MY_HWID || new Date() > exp) screen.classList.remove('hidden');
-                else { screen.classList.add('hidden'); startLicTimer(exp); }
-            } catch(e) { screen.classList.remove('hidden'); }
+        function sendYahyaOrder() {
+            let n = document.getElementById('req-shop-name').value, p = document.getElementById('req-phone').value;
+            if(!n || !p) return alert("يرجى ملء البيانات");
+            let orders = JSON.parse(localStorage.getItem('YAHYA_ORDERS')) || [];
+            orders.push({name: n, phone: p, date: new Date().toLocaleString()});
+            localStorage.setItem('YAHYA_ORDERS', JSON.stringify(orders));
+            alert("تم إرسال الطلب! تواصل مع يحيى للحصول على كود التفعيل.");
         }
 
-        function requestLic() {
-            const shop = document.getElementById('reg-shop-name').value;
-            if(!shop) return alert("سجل اسم المحل");
-            let reqs = JSON.parse(localStorage.getItem('G_REQ') || "[]");
-            reqs.push({shop, hwid: MY_HWID, date: new Date().toLocaleString()});
-            localStorage.setItem('G_REQ', JSON.stringify(reqs));
-            document.getElementById('req-sent-msg').style.display = 'block';
+        function verifyYahyaKey() {
+            let input = document.getElementById('activation-key').value.trim();
+            let activeSubs = JSON.parse(localStorage.getItem('YAHYA_ACTIVE_SUBS')) || [];
+            let sub = activeSubs.find(s => s.key === input);
+
+            if(sub) {
+                localStorage.setItem('GPRO_LIC_YAHYA', 'ACTIVE');
+                localStorage.setItem('GPRO_SHOP_YAHYA', sub.name);
+                location.reload();
+            } else {
+                document.getElementById('lock-msg').innerText = "الكود غير صحيح!";
+            }
         }
 
-        function applyLic() {
-            const val = document.getElementById('license-input').value.trim();
-            if(val) { localStorage.setItem('G_LIC', val); location.reload(); }
+        function checkLicense() {
+            if(localStorage.getItem('GPRO_LIC_YAHYA') === 'ACTIVE') {
+                document.getElementById('yahya-lock-screen').classList.add('hidden');
+                // تحديث اسم المحل تلقائياً من الترخيص
+                db.shop.name = localStorage.getItem('GPRO_SHOP_YAHYA');
+            } else {
+                document.getElementById('yahya-lock-screen').classList.remove('hidden');
+            }
         }
 
-        function startLicTimer(exp) {
-            setInterval(() => {
-                const diff = exp - new Date();
-                if(diff <= 0) location.reload();
-                const d = Math.floor(diff/86400000), h = Math.floor((diff%86400000)/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
-                document.getElementById('lic-count-down').innerText = `باقي: ${d}ي:${h}سا:${m}د:${s}ث`;
-            }, 1000);
-        }
-
-        // --- النظام الأساسي ---
+        // --- [ منطق نظامك الأصلي V39 ] ---
+        
         let currentFilter = 'all'; 
-
-        // استرجاع البيانات مع ضمان وجود المدير الافتراضي إذا كانت القائمة فارغة
         let db = JSON.parse(localStorage.getItem('GPRO_V39')) || {
             shop: { name: "G-PRO SYSTEM", logo: "" },
-            staff: [{u: "مدير", p: "123"}], // المدير الافتراضي
+            staff: [{u: "مدير", p: "123"}],
             devices: [], menu: [], shiftLogs: [],
             currentSales: 0, startDrawer: 0, isShiftOpen: false,
             defPrice: 25000, currentUser: ""
         };
-        
-        // في حال كان الـ db موجوداً ولكن الـ staff فارغ (بعد حذف العميل مثلاً)
-        if (!db.staff || db.staff.length === 0) db.staff = [{u: "مدير", p: "123"}];
 
         function save() { localStorage.setItem('GPRO_V39', JSON.stringify(db)); render(); }
         function showToast(m) { let t=document.createElement('div'); t.className='toast'; t.innerText=m; document.getElementById('toast-container').appendChild(t); setTimeout(()=>t.remove(),2500); }
@@ -258,11 +255,8 @@
             if(user) {
                 db.currentUser = u;
                 document.getElementById('login-screen').style.display='none';
-                // التحقق من صلاحيات الإدارة: في كودك الأصلي، أي مستخدم يظهر له الإدارة إذا لم تقيدها،
-                // ولكن هنا نتبع منطقك: "مدير" يرى الإدارة.
-                if(u === "مدير" || db.staff.length === 1) document.getElementById('nav-admin').classList.remove('hidden');
+                if(u === "مدير") document.getElementById('nav-admin').classList.remove('hidden');
                 else document.getElementById('nav-admin').classList.add('hidden');
-                
                 if(!db.isShiftOpen) document.getElementById('open-shift-screen').classList.remove('hidden');
                 render();
             } else alert("خطأ في كلمة السر!");
@@ -318,12 +312,7 @@
             if(db.shop.logo) { document.getElementById('side-logo-img').src=db.shop.logo; document.getElementById('side-logo-img').style.display='block'; document.getElementById('logo-text').style.display='none'; }
             
             document.getElementById('staff-list').innerHTML = db.staff.map(s => `<div class="admin-item"><span>👤 ${s.u}</span> <span style="color:var(--neon-red); cursor:pointer" onclick="if(confirm('حذف الموظف؟')){db.staff=db.staff.filter(x=>x.u!='${s.u}'); save()}">✖</span></div>`).join('');
-            
-            document.getElementById('admin-menu-list').innerHTML = db.menu.map(m => `
-                <div class="admin-item">
-                    <span>🍔 ${m.name} <b>(${m.price.toLocaleString()})</b></span> 
-                    <span style="color:var(--neon-red); cursor:pointer" onclick="db.menu=db.menu.filter(x=>x.id!=${m.id}); save()">✖</span>
-                </div>`).join('');
+            document.getElementById('admin-menu-list').innerHTML = db.menu.map(m => `<div class="admin-item"><span>🍔 ${m.name} <b>(${m.price})</b></span> <span style="color:var(--neon-red); cursor:pointer" onclick="db.menu=db.menu.filter(x=>x.id!=${m.id}); save()">✖</span></div>`).join('');
             
             document.getElementById('count-all').innerText = db.devices.length;
             document.getElementById('count-free').innerText = db.devices.filter(x=>!x.active && !x.booked).length;
@@ -359,16 +348,8 @@
             d.bookTime=Date.now(); closeModal('modal-book'); save(); 
         }
 
-        function openMenu(id) { 
-            window.actionTarget = id; 
-            document.getElementById('menu-items-list').innerHTML = db.menu.map(m=>`
-                <button class="btn-blue" onclick="addFoodToPC(${m.id})">${m.name}<br><small>${m.price.toLocaleString()}</small></button>`).join(''); 
-            openModal('modal-menu'); 
-        }
-        function addFoodToPC(mid) { 
-            let d=db.devices.find(x=>x.id===actionTarget); let item=db.menu.find(m=>m.id===mid); 
-            d.orders.push(item); showToast(`تم إضافة ${item.name} ✅`); 
-        }
+        function openMenu(id) { window.actionTarget = id; document.getElementById('menu-items-list').innerHTML = db.menu.map(m=>`<button class="btn-blue" onclick="addFoodToPC(${m.id})">${m.name}<br><small>${m.price}</small></button>`).join(''); openModal('modal-menu'); }
+        function addFoodToPC(mid) { let d=db.devices.find(x=>x.id===actionTarget); let item=db.menu.find(m=>m.id===mid); d.orders.push(item); showToast(`تم إضافة ${item.name} ✅`); }
 
         function stopSession(id) {
             let d=db.devices.find(x=>x.id===id); 
@@ -382,35 +363,13 @@
             openModal('modal-invoice');
         }
 
-        function showPage(p, el) { 
-            document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden')); 
-            document.getElementById(p+'-page').classList.remove('hidden'); 
-            document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active')); el.classList.add('active'); 
-        }
+        function showPage(p, el) { if(p === 'settings' && db.currentUser !== 'مدير') return; document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden')); document.getElementById(p+'-page').classList.remove('hidden'); document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active')); el.classList.add('active'); }
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         
-        function addStaff() { 
-            let u=document.getElementById('staff-name'), p=document.getElementById('staff-pass'); 
-            if(u.value && p.value) { db.staff.push({u:u.value, p:p.value}); u.value=""; p.value=""; save(); } 
-        }
-
-        function updateShopInfo() {
-            db.shop.name = document.getElementById('set-shop-name').value || db.shop.name;
-            db.defPrice = parseInt(document.getElementById('set-hour-price').value) || db.defPrice;
-            save(); showToast("تم الحفظ ✅");
-        }
-
-        function factoryReset() {
-            if (confirm("⚠️ سيتم حذف كل البيانات! هل أنت متأكد؟")) {
-                let pass = prompt("كلمة سر المدير:");
-                if (pass === "123") {
-                    localStorage.removeItem('GPRO_V39');
-                    location.reload();
-                }
-            }
-        }
-
+        function addStaff() { let u=document.getElementById('staff-name'), p=document.getElementById('staff-pass'); if(u.value && p.value) { db.staff.push({u:u.value, p:p.value}); u.value=""; p.value=""; save(); } }
+        function updateShopInfo() { db.shop.name = document.getElementById('set-shop-name').value || db.shop.name; db.defPrice = parseInt(document.getElementById('set-hour-price').value) || db.defPrice; save(); showToast("تم الحفظ ✅"); }
+        function factoryReset() { if (confirm("⚠️ حذف كل البيانات؟")) { let p = prompt("باسورد المدير:"); if (p === "123") { localStorage.removeItem('GPRO_V39'); location.reload(); } } }
         function handleLogoUpload(input) { if (input.files && input.files[0]) { let r = new FileReader(); r.onload = (e) => { db.shop.logo = e.target.result; save(); }; r.readAsDataURL(input.files[0]); } }
 
         setInterval(() => {
@@ -434,7 +393,8 @@
             });
         }, 1000);
 
-        checkSubscription();
+        // تشغيل فحص الترخيص عند البداية
+        checkLicense();
         render();
     </script>
 </body>
