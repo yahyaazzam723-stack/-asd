@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>G-PRO ULTRA | SECURE V39</title>
     <style>
-        /* جميع تنسيقاتك الأصلية بدون أي حذف */
         :root {
             --glass: rgba(255, 255, 255, 0.05);
             --glass-heavy: rgba(255, 255, 255, 0.12);
@@ -46,16 +45,13 @@
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(20px); z-index: 10001; align-items: center; justify-content: center; }
         .modal-content { background: #0f172a; padding: 30px; border-radius: 25px; width: 420px; border: 1px solid var(--neon-blue); text-align: center; }
 
-        /* شاشات الحماية بترتيب صحيح */
-        .full-lock { position: fixed; inset: 0; background: #020617; display: flex; align-items: center; justify-content: center; z-index: 20000; }
-        #login-screen { z-index: 15000; }
-        #open-shift-screen { z-index: 14000; }
-        #toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 30000; pointer-events: none; }
+        .full-lock { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        #toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 20000; pointer-events: none; }
         .toast { background: var(--neon-green); color: #000; padding: 12px 30px; border-radius: 50px; font-weight: 900; margin-top: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .hidden { display: none !important; }
 
-        .license-card { border: 2px solid var(--neon-red) !important; box-shadow: 0 0 20px var(--neon-red); }
-        .hwid-display { background: #000; color: var(--neon-blue); padding: 10px; border-radius: 8px; font-family: monospace; margin: 15px 0; border: 1px solid var(--glass-border); cursor: pointer; }
+        .license-card { border: 2px solid var(--neon-red) !important; }
+        .hwid-display { background: #000; color: var(--neon-blue); padding: 10px; border-radius: 8px; font-family: monospace; margin: 15px 0; border: 1px solid var(--glass-border); }
     </style>
 </head>
 <body>
@@ -66,7 +62,7 @@
         <div class="modal-content license-card">
             <h2 style="color:var(--neon-red)">النسخة غير مفعلة 🔒</h2>
             <p>يرجى إرسال رقم الجهاز للمطور لتفعيل اشتراكك:</p>
-            <div id="display-hwid" class="hwid-display" onclick="copyHWID()">--جارِ التحميل--</div>
+            <div id="display-hwid" class="hwid-display">--جارِ التحميل--</div>
             <input type="text" id="license-input" placeholder="أدخل كود التفعيل المستلم">
             <button class="btn-green" onclick="handleActivation()">تفعيل النظام الآن ✅</button>
         </div>
@@ -90,10 +86,7 @@
     </div>
 
     <aside class="sidebar">
-        <div class="logo-box">
-            <img id="side-logo-img" style="display:none">
-            <span id="logo-text" style="font-size:2.5rem; font-weight:900; color:var(--neon-blue)">G</span>
-        </div>
+        <div class="logo-box"><span id="logo-text" style="font-size:2.5rem; font-weight:900; color:var(--neon-blue)">G</span></div>
         <h2 id="shop-name-side" style="text-align:center; color:var(--neon-blue)">G-PRO</h2>
         <nav>
             <div class="nav-item active" onclick="showPage('main', this)">🖥️ الشاشات</div>
@@ -136,8 +129,8 @@
             <div class="glass-card">
                 <h3>📜 سجل الشفتات</h3>
                 <div style="max-height:400px; overflow-y:auto">
-                    <table style="width:100%; text-align:center">
-                        <thead style="color:var(--neon-blue)"><tr><th>التاريخ</th><th>الموظف</th><th>المبيعات</th><th>الإجمالي</th></tr></thead>
+                    <table style="width:100%">
+                        <thead style="color:var(--neon-blue)"><tr><th>التاريخ</th><th>الموظف</th><th>المبيعات</th></tr></thead>
                         <tbody id="shift-logs-body"></tbody>
                     </table>
                 </div>
@@ -154,31 +147,28 @@
                 </div>
                 <div class="glass-card">
                     <h3>👥 الموظفين</h3>
-                    <input type="text" id="staff-name" placeholder="الاسم">
-                    <input type="password" id="staff-pass" placeholder="كلمة السر">
+                    <input type="text" id="staff-name" placeholder="الاسم"><input type="password" id="staff-pass" placeholder="السر">
                     <button class="btn-green" onclick="addStaff()">إضافة</button>
                     <div id="staff-list" style="margin-top:10px"></div>
                 </div>
                 <div class="glass-card">
                     <h3>🍔 المنيو</h3>
-                    <input type="text" id="m-n" placeholder="الصنف">
-                    <input type="number" id="m-p" placeholder="السعر">
-                    <button class="btn-blue" onclick="addMenu()">إضافة للمنيو</button>
-                    <div id="admin-menu-list" style="margin-top:10px; max-height:100px; overflow-y:auto"></div>
+                    <input type="text" id="m-n" placeholder="الصنف"><input type="number" id="m-p" placeholder="السعر">
+                    <button class="btn-blue" onclick="addMenu()">إضافة</button>
+                    <div id="admin-menu-list" style="margin-top:10px"></div>
                 </div>
                 <div class="glass-card"><h3>🖥️ الأجهزة</h3><button class="btn-green" onclick="addNewPC()">إضافة شاشة +</button></div>
             </div>
         </div>
     </main>
 
-    <div id="modal-start" class="modal"><div class="modal-content"><h3>🎮 تشغيل جهاز</h3><input type="text" id="c-name" placeholder="اسم الزبون"><button class="btn-green" onclick="confirmStart()">بدء</button><button onclick="closeModal('modal-start')">إلغاء</button></div></div>
-    <div id="modal-book" class="modal"><div class="modal-content"><h3>📅 حجز مؤقت</h3><input type="text" id="b-name" placeholder="اسم الحاجز"><button class="btn-red" onclick="confirmBooking()">تأكيد حجز (30 د)</button><button onclick="closeModal('modal-book')">إلغاء</button></div></div>
-    <div id="modal-menu" class="modal"><div class="modal-content"><h3>🛒 المنيو</h3><div id="menu-items-list" style="display:grid; grid-template-columns:1fr 1fr; gap:10px"></div><button onclick="closeModal('modal-menu')">إغلاق</button></div></div>
-    <div id="modal-invoice" class="modal"><div class="modal-content"><h2>🧾 التصفية</h2><div id="invoice-data" style="text-align:right"></div><h2 id="net-total" style="color:var(--neon-green)">0</h2><button class="btn-red" id="confirm-finish-btn">إنهاء الحساب</button><button onclick="closeModal('modal-invoice')">إلغاء</button></div></div>
+    <div id="modal-start" class="modal"><div class="modal-content"><h3>🎮 بدء لعب</h3><input type="text" id="c-name" placeholder="الزبون"><button class="btn-green" onclick="confirmStart()">بدء</button><button onclick="closeModal('modal-start')">إلغاء</button></div></div>
+    <div id="modal-book" class="modal"><div class="modal-content"><h3>📅 حجز</h3><input type="text" id="b-name" placeholder="الاسم"><button class="btn-red" onclick="confirmBooking()">تأكيد</button><button onclick="closeModal('modal-book')">إلغاء</button></div></div>
+    <div id="modal-menu" class="modal"><div class="modal-content"><h3>🛒 الطلبات</h3><div id="menu-items-list"></div><button onclick="closeModal('modal-menu')">إغلاق</button></div></div>
+    <div id="modal-invoice" class="modal"><div class="modal-content"><h2>🧾 تصفية</h2><div id="invoice-data"></div><h2 id="net-total">0</h2><button class="btn-red" id="confirm-finish-btn">إنهاء</button><button onclick="closeModal('modal-invoice')">إلغاء</button></div></div>
 
     <script>
         const SECRET_SALT = "GPRO_SECURE_2026"; 
-
         let db = JSON.parse(localStorage.getItem('GPRO_V39')) || {
             shop: { name: "G-PRO", logo: "" },
             staff: [{u: "مدير", p: "123"}],
@@ -190,8 +180,12 @@
         };
 
         let activeFilter = 'all';
+        let actionTarget = null;
 
-        // --- نظام الحماية (المسؤول عن إظهار/إخفاء الشاشات) ---
+        function save() { localStorage.setItem('GPRO_V39', JSON.stringify(db)); render(); }
+        function showToast(m) { let t=document.createElement('div'); t.className='toast'; t.innerText=m; document.getElementById('toast-container').appendChild(t); setTimeout(()=>t.remove(),2500); }
+
+        // الحماية
         function checkSubscription() {
             if (new Date() > new Date(db.licenseExpiry)) {
                 document.getElementById('license-screen').classList.remove('hidden');
@@ -208,62 +202,94 @@
                 const decoded = atob(key.split('').reverse().join(''));
                 const parts = decoded.split('|');
                 if (parts[0] === db.hardwareID && parts[2] === SECRET_SALT) {
-                    db.licenseExpiry = parts[1];
-                    save(); showToast("تم التفعيل بنجاح! ✅"); setTimeout(() => location.reload(), 1000);
-                } else { alert("الكود خاطئ!"); }
-            } catch(e) { alert("الكود غير صالح!"); }
+                    db.licenseExpiry = parts[1]; save(); alert("تم التفعيل!"); location.reload();
+                } else alert("الكود خطأ!");
+            } catch(e) { alert("كود غير صالح!"); }
         }
 
-        // --- وظائف النظام الأصلية (V39) ---
-        function save() { localStorage.setItem('GPRO_V39', JSON.stringify(db)); render(); }
-        function showToast(m) { let t=document.createElement('div'); t.className='toast'; t.innerText=m; document.getElementById('toast-container').appendChild(t); setTimeout(()=>t.remove(),2500); }
-
+        // اللوجن والشفت
         function handleLogin() {
             if (!checkSubscription()) return;
             let u = document.getElementById('login-u-list').value, p = document.getElementById('login-p').value;
             let user = db.staff.find(s => s.u === u && s.p === p);
             if(user) {
-                db.currentUser = u;
-                document.getElementById('login-screen').classList.add('hidden');
+                db.currentUser = u; document.getElementById('login-screen').classList.add('hidden');
                 if(!db.isShiftOpen) document.getElementById('open-shift-screen').classList.remove('hidden');
                 render();
-            } else alert("خطأ في كلمة السر!");
+            } else alert("كلمة السر خطأ!");
         }
 
         function startShift() {
             db.startDrawer = parseInt(document.getElementById('drawer-amount').value) || 0;
-            db.isShiftOpen = true;
-            document.getElementById('open-shift-screen').classList.add('hidden');
-            save(); showToast("تم افتتاح الشفت ✅");
+            db.isShiftOpen = true; document.getElementById('open-shift-screen').classList.add('hidden');
+            save(); showToast("تم فتح الشفت ✅");
         }
 
         function closeShift() {
-            if(confirm("إغلاق الشفت؟")) {
-                db.shiftLogs.push({ date: new Date().toLocaleDateString(), user: db.currentUser, sales: db.currentSales, total: db.startDrawer + db.currentSales });
+            if(confirm("إغلاق؟")) {
+                db.shiftLogs.push({ date: new Date().toLocaleDateString(), user: db.currentUser, sales: db.currentSales });
                 db.currentSales = 0; db.isShiftOpen = false; save(); location.reload();
             }
         }
 
-        function addNewPC() { 
-            db.devices.push({id:Date.now(), name:"جهاز "+(db.devices.length+1), active:false, booked:false, orders:[]}); 
-            save(); 
-            showToast("تم إضافة شاشة بنجاح ✅"); // تنبيه الإضافة يعمل الآن
+        // الأجهزة والتحكم (كودك الأصلي المعدل ليعمل)
+        function addNewPC() {
+            db.devices.push({id:Date.now(), name:"جهاز "+(db.devices.length+1), active:false, booked:false, orders:[]});
+            save(); showToast("تم إضافة شاشة بنجاح ✅");
         }
 
-        function addMenu() {
-            let nI = document.getElementById('m-n'), pI = document.getElementById('m-p');
-            if(nI.value && pI.value) { db.menu.push({id:Date.now(), name:nI.value, price:parseInt(pI.value)}); nI.value=""; pI.value=""; save(); showToast("تمت الإضافة للمنيو ✅"); }
+        function deletePC(id) {
+            if(confirm("حذف الشاشة؟")) { db.devices = db.devices.filter(x=>x.id!==id); save(); showToast("تم الحذف 🗑️"); }
         }
 
+        function openAction(id, type) { actionTarget = id; openModal(type==='start'?'modal-start':'modal-book'); }
+        
+        function confirmStart() {
+            let d = db.devices.find(x=>x.id===actionTarget);
+            d.active=true; d.booked=false; d.start=Date.now(); d.client=document.getElementById('c-name').value||"زبون";
+            closeModal('modal-start'); save();
+        }
+
+        function confirmBooking() {
+            let d = db.devices.find(x=>x.id===actionTarget);
+            d.booked=true; d.client=document.getElementById('b-name').value||"حجز"; d.bookTime=Date.now();
+            closeModal('modal-book'); save();
+        }
+
+        function openMenu(id) { 
+            actionTarget = id; 
+            document.getElementById('menu-items-list').innerHTML = db.menu.map(m=>`<button class="btn-blue" onclick="addFoodToPC(${m.id})">${m.name} (${m.price})</button>`).join('');
+            openModal('modal-menu'); 
+        }
+
+        function addFoodToPC(mid) {
+            let d = db.devices.find(x=>x.id===actionTarget);
+            let item = db.menu.find(m=>m.id===mid);
+            d.orders.push(item); save(); showToast(`تم إضافة ${item.name} ✅`);
+        }
+
+        function stopSession(id) {
+            let d = db.devices.find(x=>x.id===id);
+            let playTime = (Date.now() - d.start) / 60000;
+            let playCost = Math.round(playTime * (db.defPrice / 60));
+            let menuCost = d.orders.reduce((a,b)=>a+b.price, 0);
+            let total = playCost + menuCost;
+            document.getElementById('invoice-data').innerHTML = `لعب: ${Math.ceil(playTime)} د (${playCost})<br>منيو: ${menuCost}`;
+            document.getElementById('net-total').innerText = total + " ل.س";
+            document.getElementById('confirm-finish-btn').onclick = () => { db.currentSales += total; d.active=false; d.orders=[]; closeModal('modal-invoice'); save(); };
+            openModal('modal-invoice');
+        }
+
+        // الرندر
         function render() {
             document.getElementById('login-u-list').innerHTML = db.staff.map(s => `<option value="${s.u}">${s.u}</option>`).join('');
             document.getElementById('shop-name-side').innerText = db.shop.name;
-            document.getElementById('start-drawer-view').innerText = db.startDrawer.toLocaleString();
-            document.getElementById('sales-view').innerText = db.currentSales.toLocaleString();
-            document.getElementById('total-drawer-view').innerText = (db.startDrawer + db.currentSales).toLocaleString();
-            
-            document.getElementById('staff-list').innerHTML = db.staff.map(s => `<div>👤 ${s.u} <span style="color:red; cursor:pointer" onclick="db.staff=db.staff.filter(x=>x.u!='${s.u}'); save()">✖</span></div>`).join('');
-            document.getElementById('admin-menu-list').innerHTML = db.menu.map(m => `<div>${m.name} - ${m.price} <span style="color:red; cursor:pointer" onclick="db.menu=db.menu.filter(x=>x.id!=${m.id}); save()">✖</span></div>`).join('');
+            document.getElementById('start-drawer-view').innerText = db.startDrawer;
+            document.getElementById('sales-view').innerText = db.currentSales;
+            document.getElementById('total-drawer-view').innerText = db.startDrawer + db.currentSales;
+
+            document.getElementById('staff-list').innerHTML = db.staff.map(s => `<div>${s.u} <button onclick="db.staff=db.staff.filter(x=>x.u!=='${s.u}');save()">x</button></div>`).join('');
+            document.getElementById('admin-menu-list').innerHTML = db.menu.map(m => `<div>${m.name} <button onclick="db.menu=db.menu.filter(x=>x.id!==${m.id});save()">x</button></div>`).join('');
 
             document.getElementById('count-all').innerText = db.devices.length;
             document.getElementById('count-free').innerText = db.devices.filter(x=>!x.active && !x.booked).length;
@@ -275,68 +301,44 @@
                 if(activeFilter === 'busy') return d.active;
                 if(activeFilter === 'booked') return d.booked;
                 return true;
-            }).map(d => {
-                let statusColor = d.active ? 'var(--neon-green)' : (d.booked ? 'var(--neon-gold)' : 'var(--neon-blue)');
-                return `<div class="glass-card" style="border-top: 3px solid ${statusColor}">
-                    <b>${d.name}</b><br><small>${d.active ? d.client : (d.booked ? 'حجز: '+d.client : 'متاح')}</small>
-                    <div style="font-size:1.5rem; margin:10px 0" id="t-${d.id}">00:00:00</div>
-                    ${d.active ? `<button class="btn-blue" onclick="openMenu(${d.id})">🍔 طلب</button><button class="btn-red" onclick="stopSession(${d.id})">تصفية</button>` : 
+            }).map(d => `
+                <div class="glass-card" style="border-top:3px solid ${d.active?'var(--neon-green)':(d.booked?'var(--neon-gold)':'var(--neon-blue)')}">
+                    <b>${d.name}</b><br><small>${d.active?d.client:(d.booked?'حجز: '+d.client:'متاح')}</small>
+                    <div style="font-size:1.5rem" id="t-${d.id}">00:00:00</div>
+                    ${d.active ? `<button class="btn-blue" onclick="openMenu(${d.id})">🍔</button><button class="btn-red" onclick="stopSession(${d.id})">تصفية</button>` : 
                     `<button class="btn-green" onclick="openAction(${d.id}, 'start')">${d.booked?'تفعيل':'بدء'}</button>${!d.booked?`<button class="btn-red" onclick="openAction(${d.id}, 'book')">حجز</button>`:''}`}
-                </div>`;
-            }).join('');
-            
-            document.getElementById('shift-logs-body').innerHTML = db.shiftLogs.map(l => `<tr><td>${l.date}</td><td>${l.user}</td><td>${l.sales}</td><td>${l.total}</td></tr>`).reverse().join('');
+                    <button style="width:30px; background:none; color:red" onclick="deletePC(${d.id})">×</button>
+                </div>
+            `).join('');
+            document.getElementById('shift-logs-body').innerHTML = db.shiftLogs.map(l => `<tr><td>${l.date}</td><td>${l.user}</td><td>${l.sales}</td></tr>`).join('');
         }
 
-        function openAction(id, type) { window.actionTarget = id; openModal(type==='start'?'modal-start':'modal-book'); }
-        function confirmStart() { let d=db.devices.find(x=>x.id===actionTarget); d.active=true; d.booked=false; d.start=Date.now(); d.client=document.getElementById('c-name').value||"زبون"; d.orders=[]; closeModal('modal-start'); save(); }
-        function confirmBooking() { let d=db.devices.find(x=>x.id===actionTarget); d.booked=true; d.client=document.getElementById('b-name').value||"حجز"; d.bookTime=Date.now(); closeModal('modal-book'); save(); }
-
-        function openMenu(id) { window.actionTarget = id; document.getElementById('menu-items-list').innerHTML = db.menu.map(m=>`<button class="btn-blue" onclick="addFoodToPC(${m.id})">${m.name}</button>`).join(''); openModal('modal-menu'); }
-        function addFoodToPC(mid) { let d=db.devices.find(x=>x.id===actionTarget); let item=db.menu.find(m=>m.id===mid); d.orders.push(item); showToast(`تم إضافة ${item.name} ✅`); }
-
-        function stopSession(id) {
-            let d=db.devices.find(x=>x.id===id); 
-            let minutes = (Date.now() - d.start) / 60000;
-            let playCost = Math.round(minutes * (db.defPrice / 60));
-            let menuCost = d.orders.reduce((a,b)=>a+b.price, 0);
-            let total = playCost + menuCost;
-            document.getElementById('invoice-data').innerHTML = `الوقت: ${Math.ceil(minutes)} د<br>اللعب: ${playCost}<br>المنيو: ${menuCost}`;
-            document.getElementById('net-total').innerText = total + " ل.س";
-            document.getElementById('confirm-finish-btn').onclick = () => { db.currentSales += total; d.active=false; closeModal('modal-invoice'); save(); };
-            openModal('modal-invoice');
-        }
-
-        function setFilter(f) { activeFilter = f; document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active-filter')); document.getElementById('filter-'+f).classList.add('active-filter'); render(); }
-        function showPage(p, el) { document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden')); document.getElementById(p+'-page').classList.remove('hidden'); document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active')); el.classList.add('active'); }
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function copyHWID() { navigator.clipboard.writeText(db.hardwareID); showToast("تم نسخ الكود ✅"); }
-
-        // التحديث الدوري (الوقت والحجز)
+        // الوقت
         setInterval(() => {
             let now = new Date();
             document.getElementById('digital-clock').innerText = now.toLocaleTimeString();
-            document.getElementById('day-name').innerText = now.toLocaleDateString('ar-SA', { weekday: 'long' });
             document.getElementById('date-h').innerText = now.toLocaleDateString('en-GB');
-
             db.devices.forEach(d => {
                 if(d.active) {
                     let diff = Math.floor((Date.now() - d.start)/1000), h=Math.floor(diff/3600), m=Math.floor((diff%3600)/60), s=diff%60;
-                    if(document.getElementById(`t-${d.id}`)) document.getElementById(`t-${d.id}`).innerText = `${h}:${m}:${s.toString().padStart(2,'0')}`;
+                    if(document.getElementById(`t-${d.id}`)) document.getElementById(`t-${d.id}`).innerText = `${h}:${m}:${s}`;
                 } else if(d.booked) {
-                    let left = (30 * 60 * 1000) - (Date.now() - d.bookTime);
+                    let left = Math.floor(( (30*60*1000) - (Date.now()-d.bookTime) ) / 1000);
                     if(left <= 0) { d.booked = false; save(); }
-                    else {
-                        let m = Math.floor(left/60000), s = Math.floor((left%60000)/1000);
-                        if(document.getElementById(`t-${d.id}`)) document.getElementById(`t-${d.id}`).innerText = `${m}:${s.toString().padStart(2,'0')}`;
-                    }
+                    else if(document.getElementById(`t-${d.id}`)) document.getElementById(`t-${d.id}`).innerText = `${Math.floor(left/60)}:${left%60}`;
                 }
             });
         }, 1000);
 
-        checkSubscription();
-        render();
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function setFilter(f) { activeFilter = f; render(); }
+        function showPage(p, el) { document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden')); document.getElementById(p+'-page').classList.remove('hidden'); }
+        function addStaff() { db.staff.push({u:document.getElementById('staff-name').value, p:document.getElementById('staff-pass').value}); save(); }
+        function addMenu() { db.menu.push({id:Date.now(), name:document.getElementById('m-n').value, price:parseInt(document.getElementById('m-p').value)}); save(); }
+        function updateShopInfo() { db.shop.name = document.getElementById('set-shop-name').value; db.defPrice = parseInt(document.getElementById('set-hour-price').value); save(); }
+
+        checkSubscription(); render();
     </script>
 </body>
 </html>
