@@ -15,13 +15,13 @@
         }
 
         * { box-sizing: border-box; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); font-family: 'Segoe UI', Tahoma, sans-serif; }
-        body { margin: 0; background: #020617; color: #fff; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
+        body { margin: 0; background: #020617; color: #fff; display: flex; min-height: 100vh; overflow-x: hidden; }
 
         .sidebar { width: 270px; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(40px); padding: 25px 15px; height: 100vh; position: fixed; border-left: 1px solid var(--glass-border); z-index: 1000; }
         .logo-box { width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--neon-blue); margin: 0 auto 15px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #000; box-shadow: 0 0 15px var(--neon-blue); }
         .logo-box img { width: 100%; height: 100%; object-fit: cover; }
         
-        .main-content { margin-right: 270px; padding: 35px; width: calc(100% - 270px); flex-grow: 1; }
+        .main-content { margin-right: 270px; padding: 35px; width: calc(100% - 270px); }
         .nav-item { padding: 14px 15px; cursor: pointer; border-radius: 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; color: #94a3b8; font-weight: 600; }
         .nav-item.active { background: var(--glass-heavy); color: var(--neon-blue); border-right: 4px solid var(--neon-blue); }
 
@@ -47,30 +47,37 @@
 
         .full-lock { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; }
         #toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 20000; pointer-events: none; }
-        .toast { background: var(--neon-green); color: #000; padding: 12px 30px; border-radius: 50px; font-weight: 900; margin-top: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); white-space: nowrap; }
-        .toast.error { background: var(--neon-red); color: #fff; }
+        .toast { background: var(--neon-green); color: #000; padding: 12px 30px; border-radius: 50px; font-weight: 900; margin-top: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .hidden { display: none !important; }
 
         .admin-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid var(--glass-border); margin-bottom: 5px; background: rgba(0,0,0,0.2); border-radius: 8px; }
 
-        .footer-credits { margin-right: 270px; padding: 20px; text-align: center; position: relative; }
-        .footer-line { height: 1px; background: linear-gradient(90deg, transparent, var(--neon-blue), transparent); width: 80%; margin: 0 auto 15px; box-shadow: 0 0 10px var(--neon-blue); }
-        .laser-text { font-size: 1.1rem; font-weight: 900; color: #fff; text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue); letter-spacing: 1px; position: relative; display: inline-block; }
-        .laser-text::after { content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: laser-move 3s infinite linear; }
-        @keyframes laser-move { 0% { left: -100%; } 100% { left: 100%; } }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 12px; border-bottom: 1px solid var(--glass-border); font-size: 0.9rem; }
+        /* شاشة الحماية */
+        #subscription-screen { position: fixed; inset: 0; background: #020617; z-index: 99999; display: flex; align-items: center; justify-content: center; }
+        #lic-count-down { color: var(--neon-gold); font-family: monospace; font-size: 0.9rem; margin-top: 5px; border: 1px solid var(--neon-gold); padding: 4px; border-radius: 8px; background: rgba(245, 158, 11, 0.05); }
     </style>
 </head>
 <body>
+
+    <div id="subscription-screen" class="hidden">
+        <div class="modal-content">
+            <h1 style="color:var(--neon-blue)">تفعيل G-PRO ULTRA</h1>
+            <input type="text" id="reg-shop-name" placeholder="أدخل اسم المحل">
+            <div id="display-hwid" style="color:var(--neon-green); font-family:monospace; margin:15px 0; padding:10px; background:rgba(0,0,0,0.3); border-radius:10px; border:1px dashed var(--neon-green)"></div>
+            <button class="btn-blue" onclick="requestLic()">طلب كود التفعيل 📤</button>
+            <p id="req-sent-msg" style="color:var(--neon-green); font-size:0.8rem; display:none">تم إرسال الطلب، بانتظار الكود...</p>
+            <hr style="border:0; border-top:1px solid var(--glass-border); margin:15px 0">
+            <input type="text" id="license-input" placeholder="أدخل الكود المستلم">
+            <button class="btn-green" onclick="applyLic()">تفعيل الآن ✅</button>
+        </div>
+    </div>
 
     <div id="toast-container"></div>
 
     <div id="login-screen" class="full-lock">
         <div class="modal-content">
             <h1 style="color:var(--neon-blue)">G-PRO SYSTEM</h1>
-            <p style="font-size: 0.8rem; opacity: 0.7;">مدير | 123</p>
+            <p style="font-size: 0.8rem; opacity: 0.7;">بيانات الدخول الافتراضية: مدير | 123</p>
             <select id="login-u-list"></select>
             <input type="password" id="login-p" placeholder="كلمة السر">
             <button class="btn-blue" onclick="handleLogin()">دخول النظام</button>
@@ -91,7 +98,8 @@
             <span id="logo-text" style="font-size:2.5rem; font-weight:900; color:var(--neon-blue)">G</span>
         </div>
         <h2 id="shop-name-side" style="text-align:center; color:var(--neon-blue)">G-PRO</h2>
-        <nav>
+        <div id="lic-count-down" style="text-align:center">باقي: --:--:--</div>
+        <nav style="margin-top:10px">
             <div class="nav-item active" onclick="showPage('main', this)">🖥️ الشاشات</div>
             <div class="nav-item" onclick="showPage('cash', this)">💰 الخزينة</div>
             <div class="nav-item" onclick="showPage('reports', this)">📜 السجلات</div>
@@ -133,19 +141,11 @@
         </div>
 
         <div id="reports-page" class="page hidden">
-            <div class="glass-card" style="margin-bottom: 20px;">
-                <h3>📜 سجل مبيعات الأجهزة (اليوم)</h3>
-                <div style="max-height:300px; overflow-y:auto;">
-                    <table>
-                        <thead style="color:var(--neon-blue)"><tr><th>الجهاز</th><th>الزبون</th><th>المدة</th><th>لعب</th><th>طلبات</th><th>الإجمالي</th></tr></thead>
-                        <tbody id="sales-logs-body"></tbody>
-                    </table>
-                </div>
-            </div>
             <div class="glass-card">
-                <h3>📁 أرشيف الشفتات المغلقة</h3>
-                <div style="max-height:300px; overflow-y:auto;">
-                    <table>
+                <h3>📜 سجل الشفتات المغلقة</h3>
+                <input type="text" id="search-logs" placeholder="بحث بالتاريخ أو الموظف..." oninput="renderLogs()">
+                <div style="max-height:400px; overflow-y:auto; margin-top:15px">
+                    <table style="width:100%; text-align:center">
                         <thead style="color:var(--neon-blue)"><tr><th>التاريخ</th><th>الموظف</th><th>المبيعات</th><th>الإجمالي</th></tr></thead>
                         <tbody id="shift-logs-body"></tbody>
                     </table>
@@ -179,16 +179,12 @@
                 <div class="glass-card"><h3>🖥️ الأجهزة</h3><button class="btn-green" onclick="addNewPC()">إضافة شاشة +</button></div>
                 <div class="glass-card" style="border: 1px solid var(--neon-red)">
                     <h3 style="color: var(--neon-red)">المنطقة الخطرة ⛔</h3>
+                    <p style="font-size: 0.8rem; opacity: 0.7">سيتم حذف كل البيانات وإرجاع النظام لحالته الأولى</p>
                     <button class="btn-red" onclick="factoryReset()">إعادة ضبط المصنع ⚠️</button>
                 </div>
             </div>
         </div>
     </main>
-
-    <footer class="footer-credits">
-        <div class="footer-line"></div>
-        <div class="laser-text">تم تنفيذ المشروع بواسطة المبرمج التقني يحيى عزام قاضي ريحة</div>
-    </footer>
 
     <div id="modal-start" class="modal"><div class="modal-content"><h3>🎮 تشغيل جهاز</h3><input type="text" id="c-name" placeholder="اسم الزبون"><button class="btn-green" onclick="confirmStart()">بدء</button><button onclick="closeModal('modal-start')">إلغاء</button></div></div>
     <div id="modal-book" class="modal"><div class="modal-content"><h3>📅 حجز مؤقت</h3><input type="text" id="b-name" placeholder="اسم الحاجز"><button class="btn-red" onclick="confirmBooking()">تأكيد حجز (30 د)</button><button onclick="closeModal('modal-book')">إلغاء</button></div></div>
@@ -196,37 +192,85 @@
     <div id="modal-invoice" class="modal"><div class="modal-content"><h2>🧾 التصفية</h2><div id="invoice-data" style="text-align:right; margin-bottom:15px"></div><h2 id="net-total" style="color:var(--neon-green)">0</h2><button class="btn-red" id="confirm-finish-btn">إنهاء الحساب</button><button class="btn-outline" onclick="closeModal('modal-invoice')" style="margin-top:10px">إلغاء / عودة للعب ↩️</button></div></div>
 
     <script>
+        // --- نظام الحماية ---
+        const MY_HWID = localStorage.getItem('G_HWID') || (()=>{
+            let h = "GPRO-" + Math.random().toString(36).substr(2, 9).toUpperCase();
+            localStorage.setItem('G_HWID', h); return h;
+        })();
+        
+        function checkSubscription() {
+            const lic = localStorage.getItem('G_LIC');
+            const screen = document.getElementById('subscription-screen');
+            document.getElementById('display-hwid').innerText = "رقم جهازك: " + MY_HWID;
+            if(!lic) { screen.classList.remove('hidden'); return; }
+            try {
+                const dec = atob(lic.split('').reverse().join('')).split('|');
+                const exp = new Date(dec[1]);
+                if(dec[0] !== MY_HWID || new Date() > exp) screen.classList.remove('hidden');
+                else { screen.classList.add('hidden'); startLicTimer(exp); }
+            } catch(e) { screen.classList.remove('hidden'); }
+        }
+
+        function requestLic() {
+            const shop = document.getElementById('reg-shop-name').value;
+            if(!shop) return alert("سجل اسم المحل");
+            let reqs = JSON.parse(localStorage.getItem('G_REQ') || "[]");
+            reqs.push({shop, hwid: MY_HWID, date: new Date().toLocaleString()});
+            localStorage.setItem('G_REQ', JSON.stringify(reqs));
+            document.getElementById('req-sent-msg').style.display = 'block';
+        }
+
+        function applyLic() {
+            const val = document.getElementById('license-input').value.trim();
+            if(val) { localStorage.setItem('G_LIC', val); location.reload(); }
+        }
+
+        function startLicTimer(exp) {
+            setInterval(() => {
+                const diff = exp - new Date();
+                if(diff <= 0) location.reload();
+                const d = Math.floor(diff/86400000), h = Math.floor((diff%86400000)/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
+                document.getElementById('lic-count-down').innerText = `باقي: ${d}ي:${h}سا:${m}د:${s}ث`;
+            }, 1000);
+        }
+
+        // --- النظام الأساسي ---
         let currentFilter = 'all'; 
+
+        // استرجاع البيانات مع ضمان وجود المدير الافتراضي إذا كانت القائمة فارغة
         let db = JSON.parse(localStorage.getItem('GPRO_V39')) || {
             shop: { name: "G-PRO SYSTEM", logo: "" },
-            staff: [{u: "مدير", p: "123"}],
+            staff: [{u: "مدير", p: "123"}], // المدير الافتراضي
             devices: [], menu: [], shiftLogs: [],
-            dailySalesLogs: [],
             currentSales: 0, startDrawer: 0, isShiftOpen: false,
             defPrice: 25000, currentUser: ""
         };
+        
+        // في حال كان الـ db موجوداً ولكن الـ staff فارغ (بعد حذف العميل مثلاً)
+        if (!db.staff || db.staff.length === 0) db.staff = [{u: "مدير", p: "123"}];
 
         function save() { localStorage.setItem('GPRO_V39', JSON.stringify(db)); render(); }
-        function showToast(m, type = 'success') { 
-            let t=document.createElement('div'); t.className='toast' + (type === 'error' ? ' error' : ''); 
-            t.innerText=m; document.getElementById('toast-container').appendChild(t); setTimeout(()=>t.remove(),2500); 
-        }
+        function showToast(m) { let t=document.createElement('div'); t.className='toast'; t.innerText=m; document.getElementById('toast-container').appendChild(t); setTimeout(()=>t.remove(),2500); }
 
         function handleLogin() {
             let u = document.getElementById('login-u-list').value, p = document.getElementById('login-p').value;
             let user = db.staff.find(s => s.u === u && s.p === p);
             if(user) {
-                db.currentUser = u; document.getElementById('login-screen').style.display='none';
-                if(u === "مدير") document.getElementById('nav-admin').classList.remove('hidden');
+                db.currentUser = u;
+                document.getElementById('login-screen').style.display='none';
+                // التحقق من صلاحيات الإدارة: في كودك الأصلي، أي مستخدم يظهر له الإدارة إذا لم تقيدها،
+                // ولكن هنا نتبع منطقك: "مدير" يرى الإدارة.
+                if(u === "مدير" || db.staff.length === 1) document.getElementById('nav-admin').classList.remove('hidden');
                 else document.getElementById('nav-admin').classList.add('hidden');
+                
                 if(!db.isShiftOpen) document.getElementById('open-shift-screen').classList.remove('hidden');
                 render();
-            } else { showToast("خطأ في كلمة السر! ❌", "error"); }
+            } else alert("خطأ في كلمة السر!");
         }
 
         function startShift() {
             db.startDrawer = parseInt(document.getElementById('drawer-amount').value) || 0;
-            db.isShiftOpen = true; db.dailySalesLogs = []; 
+            db.isShiftOpen = true;
             document.getElementById('open-shift-screen').classList.add('hidden');
             save(); showToast("تم فتح الشفت بنجاح ✅");
         }
@@ -239,16 +283,27 @@
         }
 
         function setFilter(f) { 
-            currentFilter = f; document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active-filter'));
-            document.getElementById('filter-'+f).classList.add('active-filter'); render(); 
+            currentFilter = f; 
+            document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active-filter'));
+            document.getElementById('filter-'+f).classList.add('active-filter');
+            render(); 
         }
 
         function addMenu() {
             let nI = document.getElementById('m-n'), pI = document.getElementById('m-p');
-            if(nI.value && pI.value) { db.menu.push({id:Date.now(), name:nI.value, price:parseInt(pI.value)}); nI.value = ""; pI.value = ""; save(); showToast("تم الإضافة ✅"); }
+            if(nI.value && pI.value) { 
+                db.menu.push({id:Date.now(), name:nI.value, price:parseInt(pI.value)}); 
+                nI.value = ""; pI.value = ""; save(); showToast("تمت الإضافة للمنيو ✅"); 
+            }
         }
 
-        function addNewPC() { db.devices.push({id:Date.now(), name:"جهاز "+(db.devices.length+1), active:false, booked:false, orders:[]}); save(); showToast("تم إضافة شاشة ✅"); }
+        function addNewPC() { db.devices.push({id:Date.now(), name:"جهاز "+(db.devices.length+1), active:false, booked:false, orders:[]}); save(); showToast("تمت إضافة شاشة ✅"); }
+
+        function renderLogs() {
+            let s = document.getElementById('search-logs').value.toLowerCase();
+            document.getElementById('shift-logs-body').innerHTML = db.shiftLogs.filter(l => l.user.toLowerCase().includes(s) || l.date.includes(s))
+                .map(l => `<tr><td>${l.date}</td><td>${l.user}</td><td>${l.sales.toLocaleString()}</td><td>${l.total.toLocaleString()}</td></tr>`).reverse().join('');
+        }
 
         function render() {
             document.getElementById('login-u-list').innerHTML = db.staff.map(s => `<option value="${s.u}">${s.u}</option>`).join('');
@@ -256,65 +311,106 @@
             document.getElementById('start-drawer-view').innerText = db.startDrawer.toLocaleString();
             document.getElementById('sales-view').innerText = db.currentSales.toLocaleString();
             document.getElementById('total-drawer-view').innerText = (db.startDrawer + db.currentSales).toLocaleString();
-            document.getElementById('shift-logs-body').innerHTML = db.shiftLogs.map(l => `<tr><td>${l.date}</td><td>${l.user}</td><td>${l.sales.toLocaleString()}</td><td>${l.total.toLocaleString()}</td></tr>`).reverse().join('');
-            document.getElementById('sales-logs-body').innerHTML = (db.dailySalesLogs || []).map(l => `<tr><td>${l.pc}</td><td>${l.client}</td><td style="color:var(--neon-gold)">${l.duration}</td><td>${l.play.toLocaleString()}</td><td>${l.items.toLocaleString()}</td><td style="color:var(--neon-green)">${l.total.toLocaleString()}</td></tr>`).reverse().join('');
+            
+            let mTotal = db.shiftLogs.filter(l => l.timestamp > Date.now() - 2592000000).reduce((a,b)=>a+b.sales, 0);
+            document.getElementById('month-total-view').innerText = mTotal.toLocaleString() + " ل.س";
 
             if(db.shop.logo) { document.getElementById('side-logo-img').src=db.shop.logo; document.getElementById('side-logo-img').style.display='block'; document.getElementById('logo-text').style.display='none'; }
-            document.getElementById('staff-list').innerHTML = db.staff.map(s => `<div class="admin-item"><span>👤 ${s.u}</span> <span style="color:var(--neon-red); cursor:pointer" onclick="if(confirm('حذف؟')){db.staff=db.staff.filter(x=>x.u!='${s.u}'); save()}">✖</span></div>`).join('');
-            document.getElementById('admin-menu-list').innerHTML = db.menu.map(m => `<div class="admin-item"><span>🍔 ${m.name} <b>(${m.price.toLocaleString()})</b></span> <span style="color:var(--neon-red); cursor:pointer" onclick="db.menu=db.menu.filter(x=>x.id!=${m.id}); save()">✖</span></div>`).join('');
+            
+            document.getElementById('staff-list').innerHTML = db.staff.map(s => `<div class="admin-item"><span>👤 ${s.u}</span> <span style="color:var(--neon-red); cursor:pointer" onclick="if(confirm('حذف الموظف؟')){db.staff=db.staff.filter(x=>x.u!='${s.u}'); save()}">✖</span></div>`).join('');
+            
+            document.getElementById('admin-menu-list').innerHTML = db.menu.map(m => `
+                <div class="admin-item">
+                    <span>🍔 ${m.name} <b>(${m.price.toLocaleString()})</b></span> 
+                    <span style="color:var(--neon-red); cursor:pointer" onclick="db.menu=db.menu.filter(x=>x.id!=${m.id}); save()">✖</span>
+                </div>`).join('');
+            
             document.getElementById('count-all').innerText = db.devices.length;
             document.getElementById('count-free').innerText = db.devices.filter(x=>!x.active && !x.booked).length;
             document.getElementById('count-busy').innerText = db.devices.filter(x=>x.active).length;
             document.getElementById('count-booked').innerText = db.devices.filter(x=>x.booked).length;
 
-            let filteredDevices = db.devices.filter(d => { if(currentFilter === 'free') return !d.active && !d.booked; if(currentFilter === 'busy') return d.active; if(currentFilter === 'booked') return d.booked; return true; });
+            let filteredDevices = db.devices.filter(d => {
+                if(currentFilter === 'free') return !d.active && !d.booked;
+                if(currentFilter === 'busy') return d.active;
+                if(currentFilter === 'booked') return d.booked;
+                return true; 
+            });
+
             document.getElementById('pc-grid').innerHTML = filteredDevices.map(d => {
                 let st = d.active ? 'border-top:3px solid var(--neon-green)' : (d.booked ? 'border-top:3px solid var(--neon-gold)' : 'border-top:3px solid var(--neon-blue)');
-                return `<div class="glass-card" style="${st}"><b>${d.name}</b><br><small>${d.active?d.client:(d.booked?'حجز: '+d.client:'متاح')}</small><div style="font-size:1.5rem; margin:10px 0" id="t-${d.id}">00:00:00</div>${d.active ? `<button class="btn-blue" onclick="openMenu(${d.id})">🍔 طلب</button><button class="btn-red" onclick="stopSession(${d.id})">تصفية</button>` : `<button class="btn-green" onclick="openAction(${d.id}, 'start')">${d.booked?'تفعيل':'بدء'}</button>${!d.booked?`<button class="btn-red" onclick="openAction(${d.id}, 'book')">حجز</button>`:''}`}</div>`;
+                return `<div class="glass-card" style="${st}">
+                    <b>${d.name}</b><br><small>${d.active?d.client:(d.booked?'حجز: '+d.client:'متاح')}</small>
+                    <div style="font-size:1.5rem; margin:10px 0" id="t-${d.id}">00:00:00</div>
+                    ${d.active ? `<button class="btn-blue" onclick="openMenu(${d.id})">🍔 طلب</button><button class="btn-red" onclick="stopSession(${d.id})">تصفية</button>` : 
+                    `<button class="btn-green" onclick="openAction(${d.id}, 'start')">${d.booked?'تفعيل':'بدء'}</button>${!d.booked?`<button class="btn-red" onclick="openAction(${d.id}, 'book')">حجز</button>`:''}`}
+                </div>`;
             }).join('');
+            renderLogs();
         }
 
         function openAction(id, type) { window.actionTarget = id; openModal(type==='start'?'modal-start':'modal-book'); }
-        function confirmStart() { let d=db.devices.find(x=>x.id===actionTarget); d.active=true; d.booked=false; d.start=Date.now(); d.client=document.getElementById('c-name').value||"زبون"; d.orders=[]; closeModal('modal-start'); save(); showToast("بدأ اللعب ✅"); }
-        function confirmBooking() { let d=db.devices.find(x=>x.id===actionTarget); d.booked=true; d.client=document.getElementById('b-name').value||"حجز"; d.bookTime=Date.now(); closeModal('modal-book'); save(); showToast("تم الحجز ✅"); }
-        function openMenu(id) { window.actionTarget = id; document.getElementById('menu-items-list').innerHTML = db.menu.map(m=>`<button class="btn-blue" onclick="addFoodToPC(${m.id})">${m.name}<br><small>${m.price.toLocaleString()}</small></button>`).join(''); openModal('modal-menu'); }
-        function addFoodToPC(mid) { let d=db.devices.find(x=>x.id===actionTarget); let item=db.menu.find(m=>m.id===mid); d.orders.push(item); showToast(`تمت إضافة ${item.name} ✅`); }
-        
-        function stopSession(id) {
-            let d = db.devices.find(x => x.id === id); 
-            let diffMs = Date.now() - d.start; // فرق الوقت بالملي ثانية
-            let diffSeconds = diffMs / 1000;
-            
-            // حساب الوقت للعرض
-            let h = Math.floor(diffSeconds / 3600);
-            let m = Math.floor((diffSeconds % 3600) / 60);
-            let durationText = (h > 0 ? h + " س و " : "") + m + " د";
-            
-            // المعادلة الدقيقة: (الثواني الإجمالية / 3600 ثانية في الساعة) * سعر الساعة
-            // لا يتم التقريب إلا في الخطوة الأخيرة
-            let playCost = Math.round((diffSeconds / 3600) * db.defPrice);
-            
-            let menuCost = d.orders.reduce((a, b) => a + b.price, 0);
-            let total = playCost + menuCost;
+        function confirmStart() { 
+            let d=db.devices.find(x=>x.id===actionTarget); d.active=true; d.booked=false; d.start=Date.now(); 
+            d.client=document.getElementById('c-name').value||"زبون"; d.orders=[]; closeModal('modal-start'); save(); 
+        }
+        function confirmBooking() { 
+            let d=db.devices.find(x=>x.id===actionTarget); d.booked=true; d.client=document.getElementById('b-name').value||"حجز"; 
+            d.bookTime=Date.now(); closeModal('modal-book'); save(); 
+        }
 
-            document.getElementById('invoice-data').innerHTML = `المدة: ${durationText}<br>تكلفة اللعب: ${playCost.toLocaleString()}<br>المنيو: ${menuCost.toLocaleString()}`;
+        function openMenu(id) { 
+            window.actionTarget = id; 
+            document.getElementById('menu-items-list').innerHTML = db.menu.map(m=>`
+                <button class="btn-blue" onclick="addFoodToPC(${m.id})">${m.name}<br><small>${m.price.toLocaleString()}</small></button>`).join(''); 
+            openModal('modal-menu'); 
+        }
+        function addFoodToPC(mid) { 
+            let d=db.devices.find(x=>x.id===actionTarget); let item=db.menu.find(m=>m.id===mid); 
+            d.orders.push(item); showToast(`تم إضافة ${item.name} ✅`); 
+        }
+
+        function stopSession(id) {
+            let d=db.devices.find(x=>x.id===id); 
+            let playTimeMinutes = (Date.now() - d.start) / 60000;
+            let playCost = Math.round((playTimeMinutes * db.defPrice) / 60);
+            let menuCost = d.orders.reduce((a,b)=>a+b.price, 0);
+            let total = playCost + menuCost;
+            document.getElementById('invoice-data').innerHTML = `الوقت: ${Math.ceil(playTimeMinutes)} دقيقة<br>تكلفة اللعب: ${playCost.toLocaleString()}<br>المنيو: ${menuCost.toLocaleString()}`;
             document.getElementById('net-total').innerText = total.toLocaleString() + " ل.س";
-            
-            document.getElementById('confirm-finish-btn').onclick = () => { 
-                db.currentSales += total; 
-                if(!db.dailySalesLogs) db.dailySalesLogs = [];
-                db.dailySalesLogs.push({ pc: d.name, client: d.client, duration: durationText, play: playCost, items: menuCost, total: total });
-                d.active = false; closeModal('modal-invoice'); save(); showToast("تم الحساب ✅"); 
-            };
+            document.getElementById('confirm-finish-btn').onclick = () => { db.currentSales += total; d.active=false; closeModal('modal-invoice'); save(); };
             openModal('modal-invoice');
         }
 
-        function showPage(p, el) { if(p === 'settings' && db.currentUser !== 'مدير') return; document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden')); document.getElementById(p+'-page').classList.remove('hidden'); document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active')); el.classList.add('active'); }
+        function showPage(p, el) { 
+            document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden')); 
+            document.getElementById(p+'-page').classList.remove('hidden'); 
+            document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active')); el.classList.add('active'); 
+        }
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function addStaff() { let u=document.getElementById('staff-name'), p=document.getElementById('staff-pass'); if(u.value && p.value) { db.staff.push({u:u.value, p:p.value}); u.value=""; p.value=""; save(); showToast("تم إضافة الموظف ✅"); } }
-        function updateShopInfo() { db.shop.name = document.getElementById('set-shop-name').value || db.shop.name; db.defPrice = parseInt(document.getElementById('set-hour-price').value) || db.defPrice; save(); showToast("حفظ ✅"); }
-        function factoryReset() { if (confirm("⚠️ حذف كل شيء؟")) { let pass = prompt("كلمة السر:"); if (pass === "123") { localStorage.removeItem('GPRO_V39'); location.reload(); } } }
+        
+        function addStaff() { 
+            let u=document.getElementById('staff-name'), p=document.getElementById('staff-pass'); 
+            if(u.value && p.value) { db.staff.push({u:u.value, p:p.value}); u.value=""; p.value=""; save(); } 
+        }
+
+        function updateShopInfo() {
+            db.shop.name = document.getElementById('set-shop-name').value || db.shop.name;
+            db.defPrice = parseInt(document.getElementById('set-hour-price').value) || db.defPrice;
+            save(); showToast("تم الحفظ ✅");
+        }
+
+        function factoryReset() {
+            if (confirm("⚠️ سيتم حذف كل البيانات! هل أنت متأكد؟")) {
+                let pass = prompt("كلمة سر المدير:");
+                if (pass === "123") {
+                    localStorage.removeItem('GPRO_V39');
+                    location.reload();
+                }
+            }
+        }
+
         function handleLogoUpload(input) { if (input.files && input.files[0]) { let r = new FileReader(); r.onload = (e) => { db.shop.logo = e.target.result; save(); }; r.readAsDataURL(input.files[0]); } }
 
         setInterval(() => {
@@ -330,10 +426,15 @@
                 } else if(d.booked) {
                     let left = (30 * 60 * 1000) - (Date.now() - d.bookTime);
                     if(left <= 0) { d.booked = false; save(); }
-                    else { let m = Math.floor(left/60000), s = Math.floor((left%60000)/1000); if(document.getElementById(`t-${d.id}`)) document.getElementById(`t-${d.id}`).innerText = `${m}:${s.toString().padStart(2,'0')}`; }
+                    else {
+                        let m = Math.floor(left/60000), s = Math.floor((left%60000)/1000);
+                        if(document.getElementById(`t-${d.id}`)) document.getElementById(`t-${d.id}`).innerText = `${m}:${s.toString().padStart(2,'0')}`;
+                    }
                 }
             });
         }, 1000);
+
+        checkSubscription();
         render();
     </script>
 </body>
