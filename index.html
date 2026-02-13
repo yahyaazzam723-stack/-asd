@@ -1,51 +1,66 @@
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G-PRO | طلب اشتراك</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
-<script>
-  // ضع رابطك اللي نسخته من صفحة Data هنا بين القوسين
-  const firebaseConfig = { databaseURL: "ضـع_رابط_قاعدة_بياناتك_هنا" };
-  if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-  const db_online = firebase.database();
+    <style>
+        body { background: #020617; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #0f172a; padding: 30px; border-radius: 15px; border: 1px solid #f59e0b; width: 90%; max-width: 400px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; background: #1e293b; color: white; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #f59e0b; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #d97706; }
+        h2 { color: #f59e0b; }
+    </style>
+</head>
+<body>
 
-  function sendOrder() {
-    const n = document.getElementById('req-name').value;
-    const t = document.getElementById('req-tel').value;
-    if(!n || !t) return alert("يرجى إكمال البيانات");
+    <div class="card">
+        <h2>طلب تفعيل نظام G-PRO</h2>
+        <p>أدخل بياناتك وسيتم التواصل معك بالكود</p>
+        <input type="text" id="req-name" placeholder="اسم المحل">
+        <input type="tel" id="req-tel" placeholder="رقم الجوال">
+        <button onclick="sendOrder()">إرسال الطلب الآن</button>
+    </div>
 
-    db_online.ref('incoming_orders').push({
-        name: n,
-        tel: t,
-        date: new Date().toLocaleString(),
-        status: 'new'
-    }).then(() => {
-        alert("تم إرسال طلبك بنجاح! سيظهر الآن عند يحيى ✅");
-        document.getElementById('req-name').value = "";
-        document.getElementById('req-tel').value = "";
-    });
-  }
-</script><script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+        // إعدادات الربط - تأكد من وضع رابطك هنا
+        const firebaseConfig = { 
+            databaseURL: "https://yahya-gpro-default-rtdb.firebaseio.com" 
+        };
+        
+        // تشغيل فيربيس
+        if (!firebase.apps.length) { 
+            firebase.initializeApp(firebaseConfig); 
+        }
+        const db_online = firebase.database();
 
-<script>
-  // ضع رابطك اللي نسخته من صفحة Data هنا بين القوسين
-  const firebaseConfig = { databaseURL: "ضـع_رابط_قاعدة_بياناتك_هنا" };
-  if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-  const db_online = firebase.database();
+        function sendOrder() {
+            const n = document.getElementById('req-name').value;
+            const t = document.getElementById('req-tel').value;
 
-  function sendOrder() {
-    const n = document.getElementById('req-name').value;
-    const t = document.getElementById('req-tel').value;
-    if(!n || !t) return alert("يرجى إكمال البيانات");
+            if(!n || !t) {
+                return alert("يا يحيى.. الزبون ما عبى البيانات!");
+            }
 
-    db_online.ref('incoming_orders').push({
-        name: n,
-        tel: t,
-        date: new Date().toLocaleString(),
-        status: 'new'
-    }).then(() => {
-        alert("تم إرسال طلبك بنجاح! سيظهر الآن عند يحيى ✅");
-        document.getElementById('req-name').value = "";
-        document.getElementById('req-tel').value = "";
-    });
-  }
-</script>
+            // إرسال البيانات للسحابة
+            db_online.ref('incoming_orders').push({
+                name: n,
+                tel: t,
+                date: new Date().toLocaleString(),
+                status: 'new'
+            }).then(() => {
+                alert("تم إرسال طلبك بنجاح! سيصلك الكود قريباً ✅");
+                document.getElementById('req-name').value = "";
+                document.getElementById('req-tel').value = "";
+            }).catch((error) => {
+                alert("حدث خطأ: " + error.message);
+            });
+        }
+    </script>
+</body>
+</html>
