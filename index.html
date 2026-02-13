@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>G-PRO ULTRA | SECURE V39</title>
+    <title>G-PRO ULTRA | PRIVATE V39.1</title>
     <style>
         :root {
             --glass: rgba(255, 255, 255, 0.05);
@@ -17,9 +17,11 @@
         * { box-sizing: border-box; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); font-family: 'Segoe UI', Tahoma, sans-serif; }
         body { margin: 0; background: #020617; color: #fff; display: flex; min-height: 100vh; overflow-x: hidden; }
 
+        /* الشاشات المقفلة */
+        .full-lock { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        
         .sidebar { width: 270px; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(40px); padding: 25px 15px; height: 100vh; position: fixed; border-left: 1px solid var(--glass-border); z-index: 1000; }
         .logo-box { width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--neon-blue); margin: 0 auto 15px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #000; box-shadow: 0 0 15px var(--neon-blue); }
-        .logo-box img { width: 100%; height: 100%; object-fit: cover; }
         
         .main-content { margin-right: 270px; padding: 35px; width: calc(100% - 270px); }
         .nav-item { padding: 14px 15px; cursor: pointer; border-radius: 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; color: #94a3b8; font-weight: 600; }
@@ -30,28 +32,24 @@
 
         .date-time-container { background: var(--glass-heavy); padding: 10px 20px; border-radius: 18px; border: 1px solid var(--neon-blue); text-align: center; min-width: 270px; }
         #digital-clock { color: var(--neon-blue); font-weight: 900; font-size: 1.3rem; font-family: monospace; }
-        .date-row { font-size: 0.8rem; margin-top: 4px; display: flex; gap: 8px; justify-content: center; font-weight: bold; }
 
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .glass-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 25px; padding: 20px; text-align: center; position: relative; }
+        .glass-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 25px; padding: 20px; text-align: center; position: relative; overflow: hidden; }
         
         button { cursor: pointer; border-radius: 12px; border: none; padding: 12px; width: 100%; font-weight: 800; margin-top: 10px; }
         .btn-blue { background: var(--neon-blue); color: #000; }
         .btn-green { background: var(--neon-green); color: #000; }
         .btn-red { background: var(--neon-red); color: #fff; }
-        .btn-outline { background: transparent; border: 1px solid var(--glass-border); color: #fff; }
 
-        input, select { background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border); color: #fff; padding: 12px; border-radius: 10px; width: 100%; margin-bottom: 10px; outline: none; }
+        input, select { background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border); color: #fff; padding: 12px; border-radius: 10px; width: 100%; margin-bottom: 10px; outline: none; text-align: center; }
+        
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(20px); z-index: 10001; align-items: center; justify-content: center; }
         .modal-content { background: #0f172a; padding: 30px; border-radius: 25px; width: 420px; border: 1px solid var(--neon-blue); text-align: center; }
 
-        .full-lock { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; }
         #toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 20000; pointer-events: none; }
         .toast { background: var(--neon-green); color: #000; padding: 12px 30px; border-radius: 50px; font-weight: 900; margin-top: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .hidden { display: none !important; }
-
-        .license-card { border: 2px solid var(--neon-red) !important; }
-        .hwid-display { background: #000; color: var(--neon-blue); padding: 10px; border-radius: 8px; font-family: monospace; margin: 15px 0; border: 1px solid var(--glass-border); }
+        .hwid-box { background: #000; padding: 10px; border-radius: 10px; border: 1px solid var(--neon-blue); margin: 15px 0; font-family: monospace; color: var(--neon-blue); cursor: pointer; }
     </style>
 </head>
 <body>
@@ -59,286 +57,333 @@
     <div id="toast-container"></div>
 
     <div id="license-screen" class="full-lock hidden">
-        <div class="modal-content license-card">
-            <h2 style="color:var(--neon-red)">النسخة غير مفعلة 🔒</h2>
-            <p>يرجى إرسال رقم الجهاز للمطور لتفعيل اشتراكك:</p>
-            <div id="display-hwid" class="hwid-display">--جارِ التحميل--</div>
-            <input type="text" id="license-input" placeholder="أدخل كود التفعيل المستلم">
-            <button class="btn-green" onclick="handleActivation()">تفعيل النظام الآن ✅</button>
+        <div class="modal-content" style="border-color: var(--neon-red);">
+            <h2 style="color: var(--neon-red);">تفعيل النسخة 🔒</h2>
+            <p>هذه النسخة غير مفعلة لهذا الجهاز، انسخ الكود وأرسله للمطور:</p>
+            <div id="hwid-display" class="hwid-box" onclick="copyHWID()">--</div>
+            <input type="text" id="license-key" placeholder="أدخل كود التفعيل هنا">
+            <button class="btn-green" onclick="activateSystem()">تفعيل الآن</button>
         </div>
     </div>
 
     <div id="login-screen" class="full-lock">
         <div class="modal-content">
-            <h1 style="color:var(--neon-blue)">G-PRO SYSTEM</h1>
-            <select id="login-u-list"></select>
-            <input type="password" id="login-p" placeholder="كلمة السر">
-            <button class="btn-blue" onclick="handleLogin()">دخول النظام</button>
+            <h1 style="color:var(--neon-blue)">G-PRO LOGIN</h1>
+            <select id="user-select"></select>
+            <input type="password" id="user-pass" placeholder="كلمة السر">
+            <button class="btn-blue" onclick="attemptLogin()">دخول</button>
         </div>
     </div>
 
-    <div id="open-shift-screen" class="full-lock hidden">
+    <div id="shift-screen" class="full-lock hidden">
         <div class="modal-content">
-            <h2 style="color:var(--neon-green)">رصيد افتتاح الشفت</h2>
-            <input type="number" id="drawer-amount" placeholder="المبلغ الموجود بالدرج">
-            <button class="btn-green" onclick="startShift()">تأكيد الافتتاح</button>
+            <h2 style="color:var(--neon-green)">افتتاح شفت جديد</h2>
+            <input type="number" id="opening-cash" placeholder="المبلغ الموجود بالدرج">
+            <button class="btn-green" onclick="confirmShiftStart()">تأكيد الافتتاح</button>
         </div>
     </div>
 
     <aside class="sidebar">
-        <div class="logo-box"><span id="logo-text" style="font-size:2.5rem; font-weight:900; color:var(--neon-blue)">G</span></div>
-        <h2 id="shop-name-side" style="text-align:center; color:var(--neon-blue)">G-PRO</h2>
+        <div class="logo-box"><span style="font-size:2.5rem; font-weight:900; color:var(--neon-blue)">G</span></div>
+        <h2 id="shop-name-display" style="text-align:center; color:var(--neon-blue)">G-PRO</h2>
         <nav>
-            <div class="nav-item active" onclick="showPage('main', this)">🖥️ الشاشات</div>
-            <div class="nav-item" onclick="showPage('cash', this)">💰 الخزينة</div>
-            <div class="nav-item" onclick="showPage('reports', this)">📜 السجلات</div>
-            <div class="nav-item" id="nav-admin" onclick="showPage('settings', this)">⚙️ الإدارة</div>
-            <button class="btn-red" onclick="location.reload()" style="margin-top:20px">خروج 🔒</button>
+            <div class="nav-item active" onclick="switchPage('main', this)">🖥️ الشاشات</div>
+            <div class="nav-item" onclick="switchPage('cash', this)">💰 الخزينة</div>
+            <div class="nav-item" onclick="switchPage('reports', this)">📜 السجلات</div>
+            <div class="nav-item" onclick="switchPage('settings', this)">⚙️ الإدارة</div>
+            <button class="btn-red" onclick="location.reload()" style="margin-top:20px">خروج</button>
         </nav>
     </aside>
 
     <main class="main-content">
-        <div class="header-top" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px">
             <div style="display:flex; gap:10px">
-                <div class="stat-card active-filter" id="filter-all" onclick="setFilter('all')">الكل: <span id="count-all">0</span></div>
-                <div class="stat-card" id="filter-free" onclick="setFilter('free')">متاح: <span id="count-free">0</span></div>
-                <div class="stat-card" id="filter-busy" onclick="setFilter('busy')">لعب: <span id="count-busy">0</span></div>
-                <div class="stat-card" id="filter-booked" onclick="setFilter('booked')">حجز: <span id="count-booked">0</span></div>
+                <div class="stat-card active-filter" onclick="setFilter('all')">الكل: <span id="c-all">0</span></div>
+                <div class="stat-card" onclick="setFilter('busy')">لعب: <span id="c-busy">0</span></div>
+                <div class="stat-card" onclick="setFilter('booked')">حجز: <span id="c-book">0</span></div>
             </div>
             <div class="date-time-container">
                 <div id="digital-clock">00:00:00</div>
-                <div class="date-row"><span id="day-name" style="color:var(--neon-gold)">--</span><span id="date-h">--/--/----</span></div>
+                <div id="date-display" style="font-size: 0.8rem; opacity: 0.8;">--/--/----</div>
             </div>
         </div>
 
-        <div id="main-page" class="page"><div class="grid" id="pc-grid"></div></div>
+        <div id="page-main" class="page"><div class="grid" id="pc-grid"></div></div>
 
-        <div id="cash-page" class="page hidden">
-            <div class="grid">
-                <div class="glass-card">
-                    <h3>💰 الصندوق الحالي</h3>
-                    <p>الافتتاحي: <span id="start-drawer-view">0</span></p>
-                    <p>المبيعات: <span id="sales-view">0</span></p>
-                    <h2 id="total-drawer-view" style="color:var(--neon-green)">0</h2>
-                    <button class="btn-red" onclick="closeShift()">إغلاق الشفت</button>
-                </div>
+        <div id="page-cash" class="page hidden">
+            <div class="glass-card" style="max-width: 400px; margin: auto;">
+                <h3>💰 وضع الخزينة</h3>
+                <p>الافتتاحي: <span id="view-start">0</span></p>
+                <p>مبيعات الشفت: <span id="view-sales">0</span></p>
+                <h2 id="view-total" style="color:var(--neon-green)">0</h2>
+                <button class="btn-red" onclick="endShift()">إنهاء وإغلاق الشفت</button>
             </div>
         </div>
 
-        <div id="reports-page" class="page hidden">
+        <div id="page-reports" class="page hidden">
             <div class="glass-card">
-                <h3>📜 سجل الشفتات</h3>
-                <div style="max-height:400px; overflow-y:auto">
-                    <table style="width:100%">
-                        <thead style="color:var(--neon-blue)"><tr><th>التاريخ</th><th>الموظف</th><th>المبيعات</th></tr></thead>
-                        <tbody id="shift-logs-body"></tbody>
-                    </table>
-                </div>
+                <h3>📜 سجل الشفتات السابقة</h3>
+                <table style="width:100%; margin-top:15px; border-collapse: collapse;">
+                    <thead><tr style="color:var(--neon-blue)"><th>التاريخ</th><th>الموظف</th><th>المبيعات</th></tr></thead>
+                    <tbody id="logs-table-body"></tbody>
+                </table>
             </div>
         </div>
 
-        <div id="settings-page" class="page hidden">
+        <div id="page-settings" class="page hidden">
             <div class="grid">
                 <div class="glass-card">
-                    <h3>🏠 الإعدادات</h3>
-                    <input type="text" id="set-shop-name" placeholder="اسم المحل">
-                    <input type="number" id="set-hour-price" placeholder="سعر الساعة">
-                    <button class="btn-blue" onclick="updateShopInfo()">حفظ ✅</button>
+                    <h3>🏠 إعدادات المحل</h3>
+                    <input type="text" id="in-shop-name" placeholder="اسم المحل">
+                    <input type="number" id="in-hour-price" placeholder="سعر الساعة">
+                    <button class="btn-blue" onclick="saveSettings()">حفظ</button>
                 </div>
                 <div class="glass-card">
                     <h3>👥 الموظفين</h3>
-                    <input type="text" id="staff-name" placeholder="الاسم"><input type="password" id="staff-pass" placeholder="السر">
-                    <button class="btn-green" onclick="addStaff()">إضافة</button>
-                    <div id="staff-list" style="margin-top:10px"></div>
+                    <input type="text" id="in-user-name" placeholder="الاسم">
+                    <input type="password" id="in-user-pass" placeholder="السر">
+                    <button class="btn-green" onclick="addUser()">إضافة موظف</button>
+                    <div id="user-list-admin" style="margin-top:10px; font-size: 0.9rem;"></div>
                 </div>
                 <div class="glass-card">
                     <h3>🍔 المنيو</h3>
-                    <input type="text" id="m-n" placeholder="الصنف"><input type="number" id="m-p" placeholder="السعر">
-                    <button class="btn-blue" onclick="addMenu()">إضافة</button>
-                    <div id="admin-menu-list" style="margin-top:10px"></div>
+                    <input type="text" id="in-item-name" placeholder="الصنف">
+                    <input type="number" id="in-item-price" placeholder="السعر">
+                    <button class="btn-blue" onclick="addMenuItem()">إضافة للمنيو</button>
+                    <div id="menu-list-admin" style="margin-top:10px; max-height: 100px; overflow-y: auto;"></div>
                 </div>
-                <div class="glass-card"><h3>🖥️ الأجهزة</h3><button class="btn-green" onclick="addNewPC()">إضافة شاشة +</button></div>
+                <div class="glass-card">
+                    <h3>🖥️ الأجهزة</h3>
+                    <button class="btn-green" onclick="addNewPC()">إضافة شاشة +</button>
+                </div>
             </div>
         </div>
     </main>
 
-    <div id="modal-start" class="modal"><div class="modal-content"><h3>🎮 بدء لعب</h3><input type="text" id="c-name" placeholder="الزبون"><button class="btn-green" onclick="confirmStart()">بدء</button><button onclick="closeModal('modal-start')">إلغاء</button></div></div>
-    <div id="modal-book" class="modal"><div class="modal-content"><h3>📅 حجز</h3><input type="text" id="b-name" placeholder="الاسم"><button class="btn-red" onclick="confirmBooking()">تأكيد</button><button onclick="closeModal('modal-book')">إلغاء</button></div></div>
-    <div id="modal-menu" class="modal"><div class="modal-content"><h3>🛒 الطلبات</h3><div id="menu-items-list"></div><button onclick="closeModal('modal-menu')">إغلاق</button></div></div>
-    <div id="modal-invoice" class="modal"><div class="modal-content"><h2>🧾 تصفية</h2><div id="invoice-data"></div><h2 id="net-total">0</h2><button class="btn-red" id="confirm-finish-btn">إنهاء</button><button onclick="closeModal('modal-invoice')">إلغاء</button></div></div>
+    <div id="mod-start" class="modal"><div class="modal-content"><h3>بدء لعب جديد</h3><input type="text" id="client-name" placeholder="اسم الزبون"><button class="btn-green" onclick="processStart()">ابدأ الآن</button><button class="btn-outline" onclick="closeModals()">إلغاء</button></div></div>
+    <div id="mod-book" class="modal"><div class="modal-content"><h3>حجز جهاز</h3><input type="text" id="book-name" placeholder="اسم الحاجز"><button class="btn-red" onclick="processBook()">تأكيد الحجز</button><button class="btn-outline" onclick="closeModals()">إلغاء</button></div></div>
+    <div id="mod-menu" class="modal"><div class="modal-content"><h3>قائمة الطلبات</h3><div id="menu-items-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:10px"></div><button onclick="closeModals()">إغلاق</button></div></div>
+    <div id="mod-invoice" class="modal"><div class="modal-content"><h2>🧾 فاتورة الحساب</h2><div id="inv-details" style="text-align: right; margin: 15px 0;"></div><h1 id="inv-total" style="color:var(--neon-green)">0</h1><button class="btn-red" id="btn-final-pay">تأكيد الدفع والإنهاء</button><button onclick="closeModals()">رجوع</button></div></div>
 
     <script>
-        const SECRET_SALT = "GPRO_SECURE_2026"; 
-        let db = JSON.parse(localStorage.getItem('GPRO_V39')) || {
-            shop: { name: "G-PRO", logo: "" },
-            staff: [{u: "مدير", p: "123"}],
-            devices: [], menu: [], shiftLogs: [],
-            currentSales: 0, startDrawer: 0, isShiftOpen: false,
-            defPrice: 25000, currentUser: "",
-            licenseExpiry: "2000-01-01",
-            hardwareID: 'GPRO-' + Math.random().toString(36).substr(2, 9).toUpperCase()
+        const SALT = "GPRO_SECURE_2026_V1";
+        
+        // توليد معرف جهاز فريد
+        function getHWID() {
+            let id = window.navigator.userAgent.length + window.navigator.userAgent.replace(/\D+/g, '');
+            return "GPRO-" + btoa(id).substring(0, 8).toUpperCase();
+        }
+
+        const myID = getHWID();
+        let currentFilter = 'all';
+        let targetPC = null;
+
+        let db = JSON.parse(localStorage.getItem('GPRO_DATA')) || {
+            hwid: myID,
+            expiry: "2000-01-01",
+            shopName: "G-PRO",
+            hourPrice: 25000,
+            users: [{u:"مدير", p:"123"}],
+            pcs: [],
+            menu: [],
+            logs: [],
+            sales: 0,
+            drawer: 0,
+            shiftOpen: false
         };
 
-        let activeFilter = 'all';
-        let actionTarget = null;
-
-        function save() { localStorage.setItem('GPRO_V39', JSON.stringify(db)); render(); }
-        function showToast(m) { let t=document.createElement('div'); t.className='toast'; t.innerText=m; document.getElementById('toast-container').appendChild(t); setTimeout(()=>t.remove(),2500); }
-
-        // الحماية
-        function checkSubscription() {
-            if (new Date() > new Date(db.licenseExpiry)) {
+        // وظائف الحماية
+        function checkExpiry() {
+            if (new Date() > new Date(db.expiry)) {
                 document.getElementById('license-screen').classList.remove('hidden');
-                document.getElementById('display-hwid').innerText = db.hardwareID;
+                document.getElementById('hwid-display').innerText = myID;
                 return false;
             }
-            document.getElementById('license-screen').classList.add('hidden');
             return true;
         }
 
-        function handleActivation() {
-            const key = document.getElementById('license-input').value.trim();
+        function activateSystem() {
+            let key = document.getElementById('license-key').value.trim();
             try {
-                const decoded = atob(key.split('').reverse().join(''));
-                const parts = decoded.split('|');
-                if (parts[0] === db.hardwareID && parts[2] === SECRET_SALT) {
-                    db.licenseExpiry = parts[1]; save(); alert("تم التفعيل!"); location.reload();
-                } else alert("الكود خطأ!");
-            } catch(e) { alert("كود غير صالح!"); }
+                let decoded = atob(key.split('').reverse().join('')).split('|');
+                if (decoded[0] === myID && decoded[2] === SALT) {
+                    db.expiry = decoded[1]; save(); alert("تم التفعيل!"); location.reload();
+                } else alert("الكود غير صحيح");
+            } catch(e) { alert("كود تالف"); }
         }
 
-        // اللوجن والشفت
-        function handleLogin() {
-            if (!checkSubscription()) return;
-            let u = document.getElementById('login-u-list').value, p = document.getElementById('login-p').value;
-            let user = db.staff.find(s => s.u === u && s.p === p);
-            if(user) {
-                db.currentUser = u; document.getElementById('login-screen').classList.add('hidden');
-                if(!db.isShiftOpen) document.getElementById('open-shift-screen').classList.remove('hidden');
+        // تسجيل الدخول
+        function attemptLogin() {
+            if(!checkExpiry()) return;
+            let u = document.getElementById('user-select').value;
+            let p = document.getElementById('user-pass').value;
+            let found = db.users.find(x => x.u === u && x.p === p);
+            if(found) {
+                document.getElementById('login-screen').classList.add('hidden');
+                if(!db.shiftOpen) document.getElementById('shift-screen').classList.remove('hidden');
                 render();
-            } else alert("كلمة السر خطأ!");
+            } else alert("كلمة السر خطأ");
         }
 
-        function startShift() {
-            db.startDrawer = parseInt(document.getElementById('drawer-amount').value) || 0;
-            db.isShiftOpen = true; document.getElementById('open-shift-screen').classList.add('hidden');
-            save(); showToast("تم فتح الشفت ✅");
+        function confirmShiftStart() {
+            db.drawer = parseInt(document.getElementById('opening-cash').value) || 0;
+            db.shiftOpen = true;
+            document.getElementById('shift-screen').classList.add('hidden');
+            save(); toast("تم فتح الشفت بنجاح ✅");
         }
 
-        function closeShift() {
-            if(confirm("إغلاق؟")) {
-                db.shiftLogs.push({ date: new Date().toLocaleDateString(), user: db.currentUser, sales: db.currentSales });
-                db.currentSales = 0; db.isShiftOpen = false; save(); location.reload();
-            }
-        }
-
-        // الأجهزة والتحكم (كودك الأصلي المعدل ليعمل)
+        // إدارة الشاشات
         function addNewPC() {
-            db.devices.push({id:Date.now(), name:"جهاز "+(db.devices.length+1), active:false, booked:false, orders:[]});
-            save(); showToast("تم إضافة شاشة بنجاح ✅");
+            db.pcs.push({id: Date.now(), name: "شاشة " + (db.pcs.length + 1), active: false, booked: false, orders: []});
+            save(); toast("تم إضافة شاشة جديدة ✅");
         }
 
         function deletePC(id) {
-            if(confirm("حذف الشاشة؟")) { db.devices = db.devices.filter(x=>x.id!==id); save(); showToast("تم الحذف 🗑️"); }
+            if(confirm("هل تريد حذف الشاشة نهائياً؟")) {
+                db.pcs = db.pcs.filter(x => x.id !== id);
+                save(); toast("تم حذف الشاشة 🗑️");
+            }
         }
 
-        function openAction(id, type) { actionTarget = id; openModal(type==='start'?'modal-start':'modal-book'); }
-        
-        function confirmStart() {
-            let d = db.devices.find(x=>x.id===actionTarget);
-            d.active=true; d.booked=false; d.start=Date.now(); d.client=document.getElementById('c-name').value||"زبون";
-            closeModal('modal-start'); save();
+        function openStart(id) { targetPC = id; document.getElementById('mod-start').style.display='flex'; }
+        function processStart() {
+            let pc = db.pcs.find(x => x.id === targetPC);
+            pc.active = true; pc.booked = false; pc.start = Date.now();
+            pc.client = document.getElementById('client-name').value || "زبون";
+            pc.orders = [];
+            closeModals(); save();
         }
 
-        function confirmBooking() {
-            let d = db.devices.find(x=>x.id===actionTarget);
-            d.booked=true; d.client=document.getElementById('b-name').value||"حجز"; d.bookTime=Date.now();
-            closeModal('modal-book'); save();
+        function openBook(id) { targetPC = id; document.getElementById('mod-book').style.display='flex'; }
+        function processBook() {
+            let pc = db.pcs.find(x => x.id === targetPC);
+            pc.booked = true; pc.client = document.getElementById('book-name').value || "حجز";
+            pc.bookStart = Date.now();
+            closeModals(); save();
         }
 
-        function openMenu(id) { 
-            actionTarget = id; 
-            document.getElementById('menu-items-list').innerHTML = db.menu.map(m=>`<button class="btn-blue" onclick="addFoodToPC(${m.id})">${m.name} (${m.price})</button>`).join('');
-            openModal('modal-menu'); 
+        function openMenu(id) {
+            targetPC = id;
+            let list = document.getElementById('menu-items-grid');
+            list.innerHTML = db.menu.map(m => `<button class="btn-blue" onclick="addOrder(${m.id})">${m.name}<br>${m.price}</button>`).join('');
+            document.getElementById('mod-menu').style.display='flex';
         }
 
-        function addFoodToPC(mid) {
-            let d = db.devices.find(x=>x.id===actionTarget);
-            let item = db.menu.find(m=>m.id===mid);
-            d.orders.push(item); save(); showToast(`تم إضافة ${item.name} ✅`);
+        function addOrder(mid) {
+            let pc = db.pcs.find(x => x.id === targetPC);
+            let item = db.menu.find(x => x.id === mid);
+            pc.orders.push(item);
+            save(); toast("تم إضافة الطلب ✅");
         }
 
-        function stopSession(id) {
-            let d = db.devices.find(x=>x.id===id);
-            let playTime = (Date.now() - d.start) / 60000;
-            let playCost = Math.round(playTime * (db.defPrice / 60));
-            let menuCost = d.orders.reduce((a,b)=>a+b.price, 0);
+        function openInvoice(id) {
+            let pc = db.pcs.find(x => x.id === id);
+            let mins = Math.ceil((Date.now() - pc.start) / 60000);
+            let playCost = Math.round(mins * (db.hourPrice / 60));
+            let menuCost = pc.orders.reduce((a, b) => a + b.price, 0);
             let total = playCost + menuCost;
-            document.getElementById('invoice-data').innerHTML = `لعب: ${Math.ceil(playTime)} د (${playCost})<br>منيو: ${menuCost}`;
-            document.getElementById('net-total').innerText = total + " ل.س";
-            document.getElementById('confirm-finish-btn').onclick = () => { db.currentSales += total; d.active=false; d.orders=[]; closeModal('modal-invoice'); save(); };
-            openModal('modal-invoice');
+
+            document.getElementById('inv-details').innerHTML = `
+                الجهاز: ${pc.name}<br>الزبون: ${pc.client}<br>
+                وقت اللعب: ${mins} دقيقة (${playCost} ل.س)<br>
+                طلبات المنيو: ${menuCost} ل.س
+            `;
+            document.getElementById('inv-total').innerText = total + " ل.س";
+            document.getElementById('btn-final-pay').onclick = () => {
+                db.sales += total; pc.active = false; pc.orders = [];
+                closeModals(); save(); toast("تمت التصفية بنجاح 💰");
+            };
+            document.getElementById('mod-invoice').style.display='flex';
         }
 
-        // الرندر
+        // الوظائف العامة
+        function save() { localStorage.setItem('GPRO_DATA', JSON.stringify(db)); render(); }
+        
         function render() {
-            document.getElementById('login-u-list').innerHTML = db.staff.map(s => `<option value="${s.u}">${s.u}</option>`).join('');
-            document.getElementById('shop-name-side').innerText = db.shop.name;
-            document.getElementById('start-drawer-view').innerText = db.startDrawer;
-            document.getElementById('sales-view').innerText = db.currentSales;
-            document.getElementById('total-drawer-view').innerText = db.startDrawer + db.currentSales;
+            document.getElementById('user-select').innerHTML = db.users.map(u => `<option>${u.u}</option>`).join('');
+            document.getElementById('shop-name-display').innerText = db.shopName;
+            document.getElementById('view-start').innerText = db.drawer.toLocaleString();
+            document.getElementById('view-sales').innerText = db.sales.toLocaleString();
+            document.getElementById('view-total').innerText = (db.drawer + db.sales).toLocaleString();
+            
+            // تحديث عدادات الإحصائيات
+            document.getElementById('c-all').innerText = db.pcs.length;
+            document.getElementById('c-busy').innerText = db.pcs.filter(x => x.active).length;
+            document.getElementById('c-book').innerText = db.pcs.filter(x => x.booked).length;
 
-            document.getElementById('staff-list').innerHTML = db.staff.map(s => `<div>${s.u} <button onclick="db.staff=db.staff.filter(x=>x.u!=='${s.u}');save()">x</button></div>`).join('');
-            document.getElementById('admin-menu-list').innerHTML = db.menu.map(m => `<div>${m.name} <button onclick="db.menu=db.menu.filter(x=>x.id!==${m.id});save()">x</button></div>`).join('');
-
-            document.getElementById('count-all').innerText = db.devices.length;
-            document.getElementById('count-free').innerText = db.devices.filter(x=>!x.active && !x.booked).length;
-            document.getElementById('count-busy').innerText = db.devices.filter(x=>x.active).length;
-            document.getElementById('count-booked').innerText = db.devices.filter(x=>x.booked).length;
-
-            document.getElementById('pc-grid').innerHTML = db.devices.filter(d => {
-                if(activeFilter === 'free') return !d.active && !d.booked;
-                if(activeFilter === 'busy') return d.active;
-                if(activeFilter === 'booked') return d.booked;
+            // رندر الشاشات
+            let filtered = db.pcs.filter(p => {
+                if(currentFilter === 'busy') return p.active;
+                if(currentFilter === 'booked') return p.booked;
                 return true;
-            }).map(d => `
-                <div class="glass-card" style="border-top:3px solid ${d.active?'var(--neon-green)':(d.booked?'var(--neon-gold)':'var(--neon-blue)')}">
-                    <b>${d.name}</b><br><small>${d.active?d.client:(d.booked?'حجز: '+d.client:'متاح')}</small>
-                    <div style="font-size:1.5rem" id="t-${d.id}">00:00:00</div>
-                    ${d.active ? `<button class="btn-blue" onclick="openMenu(${d.id})">🍔</button><button class="btn-red" onclick="stopSession(${d.id})">تصفية</button>` : 
-                    `<button class="btn-green" onclick="openAction(${d.id}, 'start')">${d.booked?'تفعيل':'بدء'}</button>${!d.booked?`<button class="btn-red" onclick="openAction(${d.id}, 'book')">حجز</button>`:''}`}
-                    <button style="width:30px; background:none; color:red" onclick="deletePC(${d.id})">×</button>
+            });
+
+            document.getElementById('pc-grid').innerHTML = filtered.map(p => `
+                <div class="glass-card" style="border-top: 4px solid ${p.active ? 'var(--neon-green)' : (p.booked ? 'var(--neon-gold)' : 'var(--neon-blue)')}">
+                    <button onclick="deletePC(${p.id})" style="position:absolute; top:5px; right:10px; width:20px; background:none; color:red">×</button>
+                    <b style="font-size:1.2rem">${p.name}</b><br>
+                    <small>${p.active ? p.client : (p.booked ? 'حجز: ' + p.client : 'متاح')}</small>
+                    <div id="time-${p.id}" style="font-size:1.8rem; margin:15px 0; font-family:monospace">00:00:00</div>
+                    <div style="display:flex; gap:5px">
+                        ${p.active ? 
+                            `<button class="btn-blue" onclick="openMenu(${p.id})">🍔</button><button class="btn-red" onclick="openInvoice(${p.id})">تصفية</button>` : 
+                            `<button class="btn-green" onclick="openStart(${p.id})">${p.booked ? 'تفعيل' : 'بدء'}</button>${!p.booked ? `<button class="btn-red" style="background:#4b1d1d" onclick="openBook(${p.id})">حجز</button>` : ''}`
+                        }
+                    </div>
                 </div>
             `).join('');
-            document.getElementById('shift-logs-body').innerHTML = db.shiftLogs.map(l => `<tr><td>${l.date}</td><td>${l.user}</td><td>${l.sales}</td></tr>`).join('');
+
+            // رندر الإدارة
+            document.getElementById('user-list-admin').innerHTML = db.users.map(u => `<div>👤 ${u.u} <button onclick="db.users=db.users.filter(x=>x.u!=='${u.u}');save()" style="width:20px; padding:0; background:none; color:red">×</button></div>`).join('');
+            document.getElementById('menu-list-admin').innerHTML = db.menu.map(m => `<div>🍴 ${m.name} (${m.price}) <button onclick="db.menu=db.menu.filter(x=>x.id!==${m.id});save()" style="width:20px; padding:0; background:none; color:red">×</button></div>`).join('');
+            document.getElementById('logs-table-body').innerHTML = db.logs.map(l => `<tr><td>${l.date}</td><td>${l.user}</td><td>${l.sales}</td></tr>`).join('');
         }
 
-        // الوقت
+        // الوقت والعدادات
         setInterval(() => {
             let now = new Date();
             document.getElementById('digital-clock').innerText = now.toLocaleTimeString();
-            document.getElementById('date-h').innerText = now.toLocaleDateString('en-GB');
-            db.devices.forEach(d => {
-                if(d.active) {
-                    let diff = Math.floor((Date.now() - d.start)/1000), h=Math.floor(diff/3600), m=Math.floor((diff%3600)/60), s=diff%60;
-                    if(document.getElementById(`t-${d.id}`)) document.getElementById(`t-${d.id}`).innerText = `${h}:${m}:${s}`;
-                } else if(d.booked) {
-                    let left = Math.floor(( (30*60*1000) - (Date.now()-d.bookTime) ) / 1000);
-                    if(left <= 0) { d.booked = false; save(); }
-                    else if(document.getElementById(`t-${d.id}`)) document.getElementById(`t-${d.id}`).innerText = `${Math.floor(left/60)}:${left%60}`;
-                }
+            document.getElementById('date-display').innerText = now.toLocaleDateString();
+
+            db.pcs.forEach(p => {
+                let el = document.getElementById(`time-${p.id}`);
+                if(!el) return;
+                if(p.active) {
+                    let diff = Math.floor((Date.now() - p.start) / 1000);
+                    let h = Math.floor(diff / 3600), m = Math.floor((diff % 3600) / 60), s = diff % 60;
+                    el.innerText = `${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                } else if(p.booked) {
+                    let remain = (30 * 60 * 1000) - (Date.now() - p.bookStart);
+                    if(remain <= 0) { p.booked = false; save(); toast("انتهى وقت حجز إحدى الشاشات ⚠️"); }
+                    else {
+                        let m = Math.floor(remain / 60000), s = Math.floor((remain % 60000) / 1000);
+                        el.innerText = `00:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                        el.style.color = 'var(--neon-gold)';
+                    }
+                } else { el.innerText = "00:00:00"; el.style.color = "#fff"; }
             });
         }, 1000);
 
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function setFilter(f) { activeFilter = f; render(); }
-        function showPage(p, el) { document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden')); document.getElementById(p+'-page').classList.remove('hidden'); }
-        function addStaff() { db.staff.push({u:document.getElementById('staff-name').value, p:document.getElementById('staff-pass').value}); save(); }
-        function addMenu() { db.menu.push({id:Date.now(), name:document.getElementById('m-n').value, price:parseInt(document.getElementById('m-p').value)}); save(); }
-        function updateShopInfo() { db.shop.name = document.getElementById('set-shop-name').value; db.defPrice = parseInt(document.getElementById('set-hour-price').value); save(); }
+        // وظائف الواجهة
+        function toast(m) { let t = document.createElement('div'); t.className='toast'; t.innerText=m; document.getElementById('toast-container').appendChild(t); setTimeout(()=>t.remove(),2500); }
+        function switchPage(p, el) { document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden')); document.getElementById('page-'+p).classList.remove('hidden'); document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active')); el.classList.add('active'); }
+        function closeModals() { document.querySelectorAll('.modal').forEach(m=>m.style.display='none'); }
+        function setFilter(f) { currentFilter = f; render(); }
+        function copyHWID() { navigator.clipboard.writeText(myID); toast("تم نسخ كود الجهاز ✅"); }
+        
+        // أزرار الإدارة
+        function saveSettings() { db.shopName = document.getElementById('in-shop-name').value; db.hourPrice = parseInt(document.getElementById('in-hour-price').value); save(); toast("تم حفظ الإعدادات ✅"); }
+        function addUser() { db.users.push({u:document.getElementById('in-user-name').value, p:document.getElementById('in-user-pass').value}); save(); }
+        function addMenuItem() { db.menu.push({id:Date.now(), name:document.getElementById('in-item-name').value, price:parseInt(document.getElementById('in-item-price').value)}); save(); }
+        function endShift() {
+            if(confirm("إغلاق الشفت؟")) {
+                db.logs.push({date: new Date().toLocaleString(), user: "مدير", sales: db.sales});
+                db.sales = 0; db.shiftOpen = false; save(); location.reload();
+            }
+        }
 
-        checkSubscription(); render();
+        render();
+        checkExpiry();
     </script>
 </body>
 </html>
