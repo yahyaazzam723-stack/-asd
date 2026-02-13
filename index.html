@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>G-PRO ULTRA | FULL ACCESS</title>
     <style>
-        /* --- ستايلات نظامك الأصلي (بدون أي تغيير) --- */
+        /* --- ستايلات نظامك الأصلي كاملة --- */
         :root {
             --glass: rgba(255, 255, 255, 0.05);
             --glass-heavy: rgba(255, 255, 255, 0.12);
@@ -50,6 +50,7 @@
         #toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 20000; pointer-events: none; }
         .toast { background: var(--neon-green); color: #000; padding: 12px 30px; border-radius: 50px; font-weight: 900; margin-top: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .hidden { display: none !important; }
+        .admin-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid var(--glass-border); margin-bottom: 5px; background: rgba(0,0,0,0.2); border-radius: 8px; }
 
         /* --- شاشة حماية يحيى --- */
         #yahya-lock-screen { position: fixed; inset: 0; background: #020617; z-index: 2000000; display: flex; align-items: center; justify-content: center; }
@@ -62,23 +63,73 @@
         <div class="yahya-card">
             <h1 style="color:var(--neon-gold)">YAHYA G-PRO</h1>
             <p id="yahya-status">جاري التحقق من التفعيل...</p>
-            
             <div id="request-section" style="background:rgba(255,255,255,0.03); padding:15px; border-radius:15px; margin-bottom:15px; border:1px dashed var(--glass-border)">
                 <small style="color:var(--neon-blue)">طلب اشتراك جديد</small>
                 <input type="text" id="req-name" placeholder="اسم المحل">
                 <input type="text" id="req-tel" placeholder="رقم الجوال">
                 <button class="btn-blue" id="btnSendOrder">إرسال الطلب ليحيى 🚀</button>
             </div>
-
             <input type="text" id="yahya-key-input" placeholder="أدخل كود التفعيل">
             <button class="btn-green" id="btnActivate">تفعيل النظام ✅</button>
         </div>
     </div>
 
     <div id="toast-container"></div>
-    <div id="login-screen" class="full-lock">...</div>
+
+    <div id="login-screen" class="full-lock">
+        <div class="modal-content">
+            <h1 style="color:var(--neon-blue)">G-PRO SYSTEM</h1>
+            <select id="login-u-list"></select>
+            <input type="password" id="login-p" placeholder="كلمة السر">
+            <button class="btn-blue" onclick="handleLogin()">دخول النظام</button>
+        </div>
+    </div>
+
+    <div id="open-shift-screen" class="full-lock hidden">
+        <div class="modal-content">
+            <h2 style="color:var(--neon-green)">رصيد افتتاح الشفت</h2>
+            <input type="number" id="drawer-amount" placeholder="المبلغ الموجود بالدرج">
+            <button class="btn-green" onclick="startShift()">تأكيد الافتتاح</button>
+        </div>
+    </div>
+
+    <aside class="sidebar">
+        <div class="logo-box">
+            <img id="side-logo-img" style="display:none">
+            <span id="logo-text" style="font-size:2.5rem; font-weight:900; color:var(--neon-blue)">G</span>
+        </div>
+        <h2 id="shop-name-side" style="text-align:center; color:var(--neon-blue)">G-PRO</h2>
+        <nav>
+            <div class="nav-item active" onclick="showPage('main', this)">🖥️ الشاشات</div>
+            <div class="nav-item" onclick="showPage('cash', this)">💰 الخزينة</div>
+            <div class="nav-item" onclick="showPage('reports', this)">📜 السجلات</div>
+            <div class="nav-item" id="nav-admin" onclick="showPage('settings', this)">⚙️ الإدارة</div>
+            <button class="btn-red" onclick="location.reload()" style="margin-top:20px">خروج 🔒</button>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div class="header-top" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px">
+            <div style="display:flex; gap:10px">
+                <div class="stat-card active-filter" id="filter-all" onclick="setFilter('all')">الكل: <span id="count-all">0</span></div>
+                <div class="stat-card" id="filter-free" onclick="setFilter('free')">متاح: <span id="count-free">0</span></div>
+                <div class="stat-card" id="filter-busy" onclick="setFilter('busy')">لعب: <span id="count-busy">0</span></div>
+            </div>
+            <div class="date-time-container">
+                <div id="digital-clock">00:00:00</div>
+                <div class="date-row"><span id="day-name" style="color:var(--neon-gold)">--</span></div>
+            </div>
+        </div>
+        <div id="main-page" class="page"><div class="grid" id="pc-grid"></div></div>
+        
+        <div id="cash-page" class="page hidden"><div class="glass-card"><h3>💰 الصندوق</h3><h2 id="total-drawer-view">0</h2><button class="btn-red" onclick="closeShift()">إغلاق الشفت</button></div></div>
+        <div id="settings-page" class="page hidden"><div class="glass-card"><h3>الإعدادات</h3><input type="text" id="set-shop-name" placeholder="اسم المحل"><button class="btn-blue" onclick="updateShopInfo()">حفظ</button></div></div>
+    </main>
+
+    <div id="modal-start" class="modal"><div class="modal-content"><h3>🎮 تشغيل جهاز</h3><input type="text" id="c-name" placeholder="اسم الزبون"><button class="btn-green" onclick="confirmStart()">بدء</button><button onclick="closeModal('modal-start')">إلغاء</button></div></div>
+    <div id="modal-invoice" class="modal"><div class="modal-content"><h2>🧾 التصفية</h2><div id="invoice-data"></div><h2 id="net-total">0</h2><button class="btn-red" id="confirm-finish-btn">إنهاء</button></div></div>
+
     <script type="module">
-        // --- دمج Firebase ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -94,34 +145,28 @@
         const app = initializeApp(firebaseConfig);
         const dbFs = getFirestore(app);
 
-        // 1. إرسال طلب جديد ليحيى
         document.getElementById('btnSendOrder').onclick = async () => {
             const name = document.getElementById('req-name').value;
             const tel = document.getElementById('req-tel').value;
             if(!name || !tel) return alert("يرجى إكمال البيانات");
-            
             try {
-                await addDoc(collection(dbFs, "requests"), {
-                    store: name,
-                    phone: tel,
-                    status: "pending",
-                    time: serverTimestamp()
-                });
-                alert("تم إرسال طلبك ليحيى بنجاح! انتظر كود التفعيل.");
-            } catch (e) { alert("خطأ في الاتصال بالسيرفر"); }
+                await addDoc(collection(dbFs, "requests"), { store: name, phone: tel, status: "pending", time: serverTimestamp() });
+                alert("تم إرسال طلبك ليحيى بنجاح!");
+            } catch (e) { alert("خطأ في الاتصال"); }
         };
 
-        // 2. التحقق من كود التفعيل أونلاين
         window.checkSubscription = async (inputKey) => {
-            const q = query(collection(dbFs, "active_keys"), where("key", "==", inputKey));
-            const querySnapshot = await getDocs(q);
-            
-            if (!querySnapshot.empty) {
-                localStorage.setItem('YAHYA_GPRO_KEY', inputKey);
-                document.getElementById('yahya-lock-screen').style.display = 'none';
-            } else {
-                document.getElementById('yahya-status').innerText = "كود التفعيل غير صحيح أو منتهي!";
-            }
+            const yahyaStatus = document.getElementById('yahya-status');
+            try {
+                const q = query(collection(dbFs, "active_keys"), where("key", "==", inputKey));
+                const querySnapshot = await getDocs(q);
+                if (!querySnapshot.empty) {
+                    localStorage.setItem('YAHYA_GPRO_KEY', inputKey);
+                    document.getElementById('yahya-lock-screen').style.display = 'none';
+                } else {
+                    yahyaStatus.innerText = "كود التفعيل غير صحيح!";
+                }
+            } catch (e) { yahyaStatus.innerText = "تحقق من الإنترنت"; }
         };
 
         document.getElementById('btnActivate').onclick = () => {
@@ -129,18 +174,68 @@
             window.checkSubscription(key);
         };
 
-        // فحص تلقائي عند فتح الصفحة
         const savedKey = localStorage.getItem('YAHYA_GPRO_KEY');
-        if(savedKey) {
-            window.checkSubscription(savedKey);
-        } else {
-            document.getElementById('yahya-status').innerText = "النظام غير مفعل";
-        }
+        if(savedKey) window.checkSubscription(savedKey);
     </script>
 
     <script>
-        /* --- نظام G-PRO الأصلي الخاص بك (كما هو تماماً) --- */
-        // ضع هنا بقية دوال الـ JavaScript الأصلية (save, render, startShift...)
+        let db = JSON.parse(localStorage.getItem('GPRO_V39')) || {
+            shop: { name: "G-PRO SYSTEM" },
+            staff: [{u: "مدير", p: "123"}],
+            devices: [], currentSales: 0, startDrawer: 0, isShiftOpen: false, currentUser: ""
+        };
+
+        function save() { localStorage.setItem('GPRO_V39', JSON.stringify(db)); render(); }
+        
+        function handleLogin() {
+            let u = document.getElementById('login-u-list').value, p = document.getElementById('login-p').value;
+            let user = db.staff.find(s => s.u === u && s.p === p);
+            if(user) {
+                db.currentUser = u;
+                document.getElementById('login-screen').style.display='none';
+                if(!db.isShiftOpen) document.getElementById('open-shift-screen').classList.remove('hidden');
+                render();
+            } else alert("خطأ!");
+        }
+
+        function startShift() {
+            db.startDrawer = parseInt(document.getElementById('drawer-amount').value) || 0;
+            db.isShiftOpen = true;
+            document.getElementById('open-shift-screen').classList.add('hidden');
+            save();
+        }
+
+        function render() {
+            document.getElementById('login-u-list').innerHTML = db.staff.map(s => `<option value="${s.u}">${s.u}</option>`).join('');
+            document.getElementById('shop-name-side').innerText = db.shop.name;
+            document.getElementById('total-drawer-view').innerText = (db.startDrawer + db.currentSales).toLocaleString();
+            
+            document.getElementById('pc-grid').innerHTML = db.devices.map(d => `
+                <div class="glass-card">
+                    <b>${d.name}</b><br><small>${d.active ? 'لعب: '+d.client : 'متاح'}</small>
+                    <div style="font-size:1.5rem; margin:10px 0" id="t-${d.id}">00:00:00</div>
+                    ${d.active ? `<button class="btn-red" onclick="stopSession(${d.id})">تصفية</button>` : 
+                    `<button class="btn-green" onclick="openAction(${d.id})">بدء</button>`}
+                </div>`).join('');
+        }
+
+        function openAction(id) { window.actionTarget = id; document.getElementById('modal-start').style.display='flex'; }
+        function confirmStart() { 
+            let d=db.devices.find(x=>x.id===actionTarget); d.active=true; d.start=Date.now(); 
+            d.client=document.getElementById('c-name').value||"زبون"; document.getElementById('modal-start').style.display='none'; save(); 
+        }
+
+        function showPage(p, el) { 
+            document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden')); 
+            document.getElementById(p+'-page').classList.remove('hidden'); 
+        }
+
+        // ساعة النظام
+        setInterval(() => {
+            document.getElementById('digital-clock').innerText = new Date().toLocaleTimeString();
+        }, 1000);
+
+        render();
     </script>
 </body>
 </html>
