@@ -87,12 +87,10 @@
         </div>
     </div>
 
-    <div id="login-screen" class="full-lock hidden">
+    <div id="login-screen" class="full-lock">
         <div class="modal-content">
             <h1 style="color:var(--neon-blue)">G-PRO SYSTEM</h1>
-            <select id="login-u-list">
-                <option value="مدير">مدير</option>
-            </select>
+            <select id="login-u-list"></select>
             <input type="password" id="login-p" placeholder="كلمة السر">
             <button class="btn-blue" onclick="handleLogin()">دخول النظام</button>
         </div>
@@ -230,7 +228,7 @@
     <div id="modal-start" class="modal"><div class="modal-content"><h3>🎮 تشغيل جهاز</h3><input type="text" id="c-name" placeholder="اسم الزبون"><input type="number" id="c-limit" placeholder="تحديد وقت (بالدقائق)"><button class="btn-green" onclick="confirmStart()">بدء</button><button onclick="closeModal('modal-start')">إلغاء</button></div></div>
     <div id="modal-book" class="modal"><div class="modal-content"><h3>📅 حجز مؤقت (30 دقيقة)</h3><input type="text" id="b-name" placeholder="اسم الحاجز"><button class="btn-red" onclick="confirmBooking()">تأكيد حجز</button><button onclick="closeModal('modal-book')">إلغاء</button></div></div>
     <div id="modal-menu" class="modal"><div class="modal-content"><h3>🛒 المنيو</h3><div id="menu-items-list" style="display:grid; grid-template-columns:1fr 1fr; gap:10px"></div><button onclick="closeModal('modal-menu')">إغلاق</button></div></div>
-    <div id="modal-invoice" class="modal"><div class="modal-content"><h2>🧾 التصفية</h2><div id="invoice-data" style="text-align:right; margin:15px 0; line-height:1.8"></div><h2 id="net-total" style="color:var(--neon-green)">0</h2><button class="btn-red" id="confirm-finish-btn">إنهاء الحساب</button><button class="btn-outline" onclick="closeModal('modal-invoice')">إلغاء</button></div></div>
+    <div id="modal-invoice" class="modal"><div class="modal-content"><h2>🧾 التصفية</h2><div id="invoice-data" style="text-align:right"></div><h2 id="net-total" style="color:var(--neon-green)">0</h2><button class="btn-red" id="confirm-finish-btn">إنهاء الحساب</button><button class="btn-outline" onclick="closeModal('modal-invoice')">إلغاء</button></div></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -267,7 +265,6 @@
                     const data = snap.docs[0].data();
                     localStorage.setItem('YAHYA_GPRO_KEY', inputKey);
                     document.getElementById('yahya-lock-screen').style.display = 'none';
-                    document.getElementById('login-screen').classList.remove('hidden');
                     
                     cloudResetCredits = data.resetCredits || 0;
                     cloudInfoCredits = data.infoCredits || 0;
@@ -285,16 +282,14 @@
                     
                     const btnI = document.getElementById('yahya-info-btn');
                     if(btnI) btnI.innerText = cloudInfoCredits > 0 ? `فتح قفل الهوية (رصيد: ${cloudInfoCredits}) ✅` : "طلب تعديل البيانات (فتح القفل)";
-                } else {
-                    document.getElementById('yahya-status').innerText = "الكود غير صحيح أو منتهي!";
                 }
             });
         };
 
         async function handleAutoInfoUnlock(docId) {
             await updateDoc(doc(dbFs, "active_keys", docId), { infoCredits: cloudInfoCredits - 1 });
-            let localDb = JSON.parse(localStorage.getItem('GPRO_V41'));
-            if(localDb) { localDb.shop.isConfigured = false; localStorage.setItem('GPRO_V41', JSON.stringify(localDb)); }
+            db.shop.isConfigured = false; 
+            localStorage.setItem('GPRO_V41', JSON.stringify(db));
             alert("✅ وافق يحيى على طلبك. يمكنك الآن تعديل اسم المحل والسعر.");
             location.reload();
         }
@@ -311,7 +306,7 @@
                  handleAutoFactoryReset( (await getDocs(query(collection(dbFs, "active_keys"), where("key", "==", localStorage.getItem('YAHYA_GPRO_KEY'))))).docs[0].id );
             } else {
                 if(confirm("إرسال طلب فرمتة ليحيى؟")) {
-                    await addDoc(collection(dbFs, "requests"), { store: db.shop.name || 'غير معروف', storeKey: localStorage.getItem('YAHYA_GPRO_KEY'), type: 'reset', time: serverTimestamp() });
+                    await addDoc(collection(dbFs, "requests"), { store: db.shop.name, storeKey: localStorage.getItem('YAHYA_GPRO_KEY'), type: 'reset', time: serverTimestamp() });
                     alert("تم إرسال الطلب. انتظر موافقة يحيى...");
                 }
             }
@@ -322,7 +317,7 @@
                 handleAutoInfoUnlock( (await getDocs(query(collection(dbFs, "active_keys"), where("key", "==", localStorage.getItem('YAHYA_GPRO_KEY'))))).docs[0].id );
             } else {
                 if(confirm("إرسال طلب فتح قفل الهوية ليحيى؟")) {
-                    await addDoc(collection(dbFs, "requests"), { store: db.shop.name || 'غير معروف', storeKey: localStorage.getItem('YAHYA_GPRO_KEY'), type: 'info', time: serverTimestamp() });
+                    await addDoc(collection(dbFs, "requests"), { store: db.shop.name, storeKey: localStorage.getItem('YAHYA_GPRO_KEY'), type: 'info', time: serverTimestamp() });
                     alert("تم إرسال الطلب. انتظر موافقة يحيى...");
                 }
             }
@@ -339,9 +334,8 @@
     <script>
         let currentFilter = 'all';
         let db = JSON.parse(localStorage.getItem('GPRO_V41')) || {
-            shop: { name: "", logo: "", isConfigured: false }, 
-            staff: [{u: "مدير", p: "123"}],
-            devices: [], menu: [], shiftLogs: [], currentSales: 0, startDrawer: 0, isShiftOpen: false, defPrice: 2500, currentUser: "", pcHistory: []
+            shop: { name: "", logo: "", isConfigured: false }, staff: [{u: "مدير", p: "123"}],
+            devices: [], menu: [], shiftLogs: [], currentSales: 0, startDrawer: 0, isShiftOpen: false, defPrice: 25000, currentUser: "", pcHistory: []
         };
         let tempLogo = db.shop.logo;
         let actionTarget = null;
@@ -353,20 +347,6 @@
             t.innerText=msg; document.getElementById('toast-container').appendChild(t); 
             setTimeout(()=>t.remove(),3000);
         }
-
-        // تحديث الساعة والتاريخ
-        function updateClock() {
-            const now = new Date();
-            const days = ['الأحد', 'الأثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-            document.getElementById('digital-clock').innerText = now.toLocaleTimeString('en-US', { hour12: false });
-            document.getElementById('day-name').innerText = days[now.getDay()];
-            document.getElementById('date-g').innerText = now.toLocaleDateString('en-GB');
-            // التاريخ الهجري (تقريبي)
-            const options = { year: 'numeric', month: 'numeric', day: 'numeric', calendar: 'islamic-uma' };
-            document.getElementById('date-h').innerText = now.toLocaleDateString('ar-SA-u-ca-islamic-uma', {day:'numeric', month:'numeric', year:'numeric'});
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
 
         window.handleSetupLogo = (input) => {
             if (input.files && input.files[0]) {
@@ -384,7 +364,7 @@
             save(); alert("تم التثبيت ✅"); location.reload();
         };
 
-        window.handleLogin = () => {
+        function handleLogin() {
             let u = document.getElementById('login-u-list').value, p = document.getElementById('login-p').value;
             let user = db.staff.find(s => s.u === u && s.p === p);
             if(user) {
@@ -394,12 +374,12 @@
                 else if(!db.isShiftOpen) document.getElementById('open-shift-screen').classList.remove('hidden');
                 if(u !== "مدير") document.getElementById('nav-admin').classList.add('hidden');
                 render();
-            } else alert("كلمة السر خاطئة!");
+            } else alert("خطأ!");
         }
 
         window.changeAdminPass = () => { let p = document.getElementById('admin-new-pass').value; if(p.length > 2) { db.staff.find(s=>s.u==='مدير').p = p; save(); showToast("تم تحديث الباسورد"); } };
-        window.startShift = () => { db.startDrawer = parseInt(document.getElementById('drawer-amount').value) || 0; db.isShiftOpen = true; db.pcHistory = []; save(); document.getElementById('open-shift-screen').classList.add('hidden'); }
-        window.closeShift = () => { if(confirm("إغلاق؟")) { db.shiftLogs.push({ date: new Date().toLocaleDateString(), user: db.currentUser, sales: db.currentSales }); db.currentSales=0; db.isShiftOpen=false; save(); location.reload(); } }
+        function startShift() { db.startDrawer = parseInt(document.getElementById('drawer-amount').value) || 0; db.isShiftOpen = true; db.pcHistory = []; save(); document.getElementById('open-shift-screen').classList.add('hidden'); }
+        function closeShift() { if(confirm("إغلاق؟")) { db.shiftLogs.push({ date: new Date().toLocaleDateString(), user: db.currentUser, sales: db.currentSales }); db.currentSales=0; db.isShiftOpen=false; save(); location.reload(); } }
         
         window.showPage = (p, btn) => {
             document.querySelectorAll('.page').forEach(x => x.classList.add('hidden'));
@@ -422,11 +402,9 @@
             document.getElementById('set-shop-name').value = db.shop.name;
             document.getElementById('set-hour-price').value = db.defPrice;
             document.getElementById('login-u-list').innerHTML = db.staff.map(s => `<option value="${s.u}">${s.u}</option>`).join('');
-            
-            document.getElementById('sales-view').innerText = (db.currentSales || 0).toLocaleString();
-            document.getElementById('start-drawer-view').innerText = (db.startDrawer || 0).toLocaleString();
-            document.getElementById('total-drawer-view').innerText = ((db.startDrawer || 0) + (db.currentSales || 0)).toLocaleString();
-            
+            document.getElementById('sales-view').innerText = db.currentSales.toLocaleString();
+            document.getElementById('start-drawer-view').innerText = db.startDrawer.toLocaleString();
+            document.getElementById('total-drawer-view').innerText = (db.startDrawer + db.currentSales).toLocaleString();
             document.getElementById('count-all').innerText = db.devices.length;
             document.getElementById('count-free').innerText = db.devices.filter(x=>!x.active && !x.booked).length;
             document.getElementById('count-busy').innerText = db.devices.filter(x=>x.active).length;
@@ -450,26 +428,78 @@
                     `<button class="btn-green" onclick="openAction(${d.id}, 'start')">${d.booked?'تفعيل':'بدء'}</button>${!d.booked?`<button class="btn-red" onclick="openAction(${d.id}, 'book')">حجز</button>`:''}`}
                 </div>`).join('');
 
-            document.getElementById('current-pc-sales').innerHTML = (db.pcHistory || []).map(h => `<tr><td>${h.pc}</td><td>${h.amount.toLocaleString()}</td><td>${h.time}</td></tr>`).join('');
-            document.getElementById('shift-logs-body').innerHTML = (db.shiftLogs || []).map(l => `<tr><td>${l.date}</td><td>${l.user}</td><td>${l.sales.toLocaleString()}</td></tr>`).join('');
+            document.getElementById('current-pc-sales').innerHTML = db.pcHistory.map(h => `<tr><td>${h.pc}</td><td>${h.amount.toLocaleString()}</td><td>${h.time}</td></tr>`).join('');
+            document.getElementById('shift-logs-body').innerHTML = db.shiftLogs.map(l => `<tr><td>${l.date}</td><td>${l.user}</td><td>${l.sales.toLocaleString()}</td></tr>`).join('');
             document.getElementById('staff-list').innerHTML = db.staff.map(s => `<div class="admin-item"><span>👤 ${s.u}</span> ${s.u!=='مدير'?`<span onclick="db.staff=db.staff.filter(x=>x.u!='${s.u}'); save()" style="cursor:pointer">✖</span>`:''}</div>`).join('');
-            document.getElementById('admin-menu-list').innerHTML = (db.menu || []).map(m => `<div class="admin-item"><span>🍔 ${m.name} (${m.price})</span><span onclick="db.menu=db.menu.filter(x=>x.id!=${m.id}); save()" style="cursor:pointer">✖</span></div>`).join('');
+            document.getElementById('admin-menu-list').innerHTML = db.menu.map(m => `<div class="admin-item"><span>🍔 ${m.name} (${m.price})</span><span onclick="db.menu=db.menu.filter(x=>x.id!=${m.id}); save()" style="cursor:pointer">✖</span></div>`).join('');
             document.getElementById('admin-pc-list').innerHTML = db.devices.map(d => `<div class="admin-item"><span>🖥️ ${d.name}</span><span onclick="deletePC(${d.id})" style="cursor:pointer; color:var(--neon-red); font-weight:bold">حذف ✖</span></div>`).join('');
         }
 
         window.addNewPC = () => { db.devices.push({id:Date.now(), name:"جهاز "+(db.devices.length+1), active:false, booked:false, orders:[]}); save(); };
         window.openModal = (id) => document.getElementById(id).style.display = 'flex';
         window.closeModal = (id) => document.getElementById(id).style.display = 'none';
+
         window.openAction = (id, type) => { actionTarget = id; openModal(type==='start'?'modal-start':'modal-book'); };
+        
         window.confirmStart = () => { 
-            let d=db.devices.find(x=>x.id===actionTarget); d.active=true; d.booked=false; d.start=Date.now(); 
-            d.client=document.getElementById('c-name').value||"زبون"; d.limit=parseInt(document.getElementById('c-limit').value)||0; 
-            d.alerted=false; d.orders = []; closeModal('modal-start'); save(); 
+            let d=db.devices.find(x=>x.id===actionTarget); 
+            d.active=true; d.booked=false; d.start=Date.now(); 
+            d.client=document.getElementById('c-name').value||"زبون"; 
+            d.limit=parseInt(document.getElementById('c-limit').value)||0; 
+            d.alerted=false; d.orders = []; 
+            closeModal('modal-start'); save(); 
         };
+
         window.confirmBooking = () => { 
-            let d=db.devices.find(x=>x.id===actionTarget); d.booked=true; d.start=Date.now(); d.limit=30; 
-            d.client=document.getElementById('b-name').value||"حجز"; closeModal('modal-book'); save(); 
+            let d=db.devices.find(x=>x.id===actionTarget); 
+            d.booked=true; d.start=Date.now(); d.limit=30; 
+            d.client=document.getElementById('b-name').value||"حجز"; 
+            closeModal('modal-book'); save(); 
         };
+
+        window.stopSession = (id) => {
+            let d=db.devices.find(x=>x.id===id); let min = (Date.now() - d.start) / 60000;
+            let pCost = Math.round((min * db.defPrice) / 60); let mCost = d.orders.reduce((a,b)=>a+b.price, 0);
+            let total = pCost + mCost;
+            document.getElementById('invoice-data').innerHTML = `الوقت: ${Math.ceil(min)} دقيقة<br>المجموع: ${total.toLocaleString()}`;
+            document.getElementById('net-total').innerText = total.toLocaleString();
+            document.getElementById('confirm-finish-btn').onclick = () => { 
+                db.currentSales += total; db.pcHistory.unshift({ pc: d.name, amount: total, time: new Date().toLocaleTimeString() });
+                d.active=false; d.booked=false; closeModal('modal-invoice'); save(); 
+            };
+            openModal('modal-invoice');
+        };
+
+        window.openMenu = (id) => { actionTarget = id; document.getElementById('menu-items-list').innerHTML = db.menu.map(m=>`<button class="btn-blue" onclick="db.devices.find(x=>x.id===actionTarget).orders.push({name:'${m.name}', price:${m.price}}); save(); showToast('تم إضافة ${m.name}')">${m.name}</button>`).join(''); openModal('modal-menu'); };
+        window.addMenu = () => { let n=document.getElementById('m-n'), p=document.getElementById('m-p'); if(n.value){db.menu.push({id:Date.now(), name:n.value, price:parseInt(p.value)}); save(); n.value=''; p.value='';} };
+        
+        window.addStaff = () => { 
+            let u=document.getElementById('staff-name'), p=document.getElementById('staff-pass'); 
+            if(u.value && p.value){ db.staff.push({u:u.value, p:p.value}); save(); u.value=''; p.value=''; } 
+        };
+
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('digital-clock').innerText = now.toLocaleTimeString('ar-EG');
+            document.getElementById('day-name').innerText = now.toLocaleDateString('ar-EG', {weekday: 'long'});
+            document.getElementById('date-g').innerText = now.toLocaleDateString('en-GB');
+            document.getElementById('date-h').innerText = now.toLocaleDateString('ar-SA');
+
+            db.devices.forEach(d => {
+                if(d.active || d.booked) {
+                    let diff = Date.now() - d.start;
+                    let h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
+                    let display = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                    let el = document.getElementById('t-'+d.id);
+                    if(el) el.innerText = display;
+
+                    if(d.limit > 0 && (diff/60000) >= d.limit && !d.alerted) {
+                        showToast(`انتهى وقت ${d.name}`, true);
+                        d.alerted = true;
+                    }
+                }
+            });
+        }, 1000);
 
         render();
     </script>
