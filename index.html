@@ -2,248 +2,527 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>G-PRO ULTRA | BY YAHYA.EXE.V1</title>
+    <title>G-PRO ULTRA | FULL ACCESS</title>
     <style>
-        /* --- الأساسيات والتنسيق العام --- */
-        :root { 
-            --glass: rgba(255, 255, 255, 0.05); 
-            --glass-heavy: rgba(255, 255, 255, 0.12); 
-            --glass-border: rgba(255, 255, 255, 0.15); 
-            --neon-blue: #00d2ff; 
-            --neon-green: #39ff14; 
-            --neon-red: #ff003c; 
-            --neon-gold: #f59e0b; 
-        }
+        /* --- ستايلات النظام الأساسية --- */
+        #yahya-lock-screen { position: fixed; inset: 0; background: #020617; z-index: 2000000; display: flex; align-items: center; justify-content: center; }
+        .yahya-card { background: #0f172a; padding: 35px; border-radius: 30px; border: 2px solid #f59e0b; width: 400px; text-align: center; box-shadow: 0 0 50px rgba(245, 158, 11, 0.2); color: white; }
+        .yahya-card input { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 12px; border-radius: 10px; width: 100%; margin-bottom: 10px; outline: none; text-align: center; }
         
+        #sub-timer-display { background: linear-gradient(135deg, #1e40af, #3b82f6); border: 1px solid #60a5fa; padding: 10px; border-radius: 12px; color: #fff; font-size: 0.8rem; margin: 15px 0; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: none; line-height: 1.5; }
+
+        :root { --glass: rgba(255, 255, 255, 0.05); --glass-heavy: rgba(255, 255, 255, 0.12); --glass-border: rgba(255, 255, 255, 0.15); --neon-blue: #00d2ff; --neon-green: #39ff14; --neon-red: #ff003c; --neon-gold: #f59e0b; }
         * { box-sizing: border-box; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); font-family: 'Segoe UI', Tahoma, sans-serif; }
         body { margin: 0; background: #020617; color: #fff; display: flex; min-height: 100vh; overflow-x: hidden; }
 
-        /* الشاشات المقفلة */
-        .full-lock { position: fixed; inset: 0; background: #020617; z-index: 99999; display: flex; align-items: center; justify-content: center; }
-        .yahya-card { background: #0f172a; padding: 35px; border-radius: 30px; border: 2px solid var(--neon-gold); width: 400px; text-align: center; box-shadow: 0 0 50px rgba(245, 158, 11, 0.2); }
-        
-        /* القائمة الجانبية */
         .sidebar { width: 270px; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(40px); padding: 25px 15px; height: 100vh; position: fixed; border-left: 1px solid var(--glass-border); z-index: 1000; }
         .logo-box { width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--neon-blue); margin: 0 auto 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #000; box-shadow: 0 0 15px var(--neon-blue); }
         .logo-box img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* أزرار التواصل الخاصة بيحيى */
-        .dev-contact-btn { display: block; width: 100%; padding: 12px; margin-top: 10px; border-radius: 12px; text-decoration: none; text-align: center; font-weight: 800; font-size: 0.9rem; border: 1px solid transparent; }
-        .btn-wa { background: rgba(37, 211, 102, 0.15); color: #25D366; border-color: rgba(37, 211, 102, 0.3); }
-        .btn-wa:hover { background: #25D366; color: #000; box-shadow: 0 0 15px #25D366; }
-        .btn-ig { background: rgba(225, 48, 108, 0.15); color: #E1306C; border-color: rgba(225, 48, 108, 0.3); }
-        .btn-ig:hover { background: #E1306C; color: #fff; box-shadow: 0 0 15px #E1306C; }
-
-        /* المحتوى الرئيسي */
         .main-content { margin-right: 270px; padding: 35px; width: calc(100% - 270px); }
         .nav-item { padding: 14px 15px; cursor: pointer; border-radius: 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; color: #94a3b8; font-weight: 600; }
         .nav-item.active { background: var(--glass-heavy); color: var(--neon-blue); border-right: 4px solid var(--neon-blue); }
-        
+
+        .stat-card { background: var(--glass); padding: 12px 20px; border-radius: 15px; border: 1px solid var(--glass-border); font-weight: 800; cursor: pointer; border-bottom: 3px solid transparent; }
+        .stat-card.active-filter { border-bottom-color: var(--neon-blue); background: var(--glass-heavy); box-shadow: 0 4px 15px rgba(0, 210, 255, 0.2); }
+
+        .date-time-container { background: var(--glass-heavy); padding: 10px 20px; border-radius: 18px; border: 1px solid var(--neon-blue); text-align: center; min-width: 270px; }
+        #digital-clock { color: var(--neon-blue); font-weight: 900; font-size: 1.3rem; font-family: monospace; }
+        .date-row { font-size: 0.8rem; margin-top: 4px; display: flex; gap: 8px; justify-content: center; font-weight: bold; }
+
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .glass-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 25px; padding: 20px; text-align: center; position: relative; }
         
-        /* الأزرار والعناصر */
         button { cursor: pointer; border-radius: 12px; border: none; padding: 12px; width: 100%; font-weight: 800; margin-top: 10px; }
         .btn-blue { background: var(--neon-blue); color: #000; }
         .btn-green { background: var(--neon-green); color: #000; }
         .btn-red { background: var(--neon-red); color: #fff; }
+        .btn-outline { background: transparent; border: 1px solid var(--glass-border); color: #fff; }
+
         input, select { background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border); color: #fff; padding: 12px; border-radius: 10px; width: 100%; margin-bottom: 10px; outline: none; }
-        
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(20px); z-index: 10001; align-items: center; justify-content: center; }
         .modal-content { background: #0f172a; padding: 30px; border-radius: 25px; width: 420px; border: 1px solid var(--neon-blue); text-align: center; }
-        
-        .hidden { display: none !important; }
+
+        .full-lock { position: fixed; inset: 0; background: #020617; z-index: 9999; display: flex; align-items: center; justify-content: center; }
         #toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 20000; pointer-events: none; }
-        .toast { background: var(--neon-green); color: #000; padding: 12px 30px; border-radius: 50px; font-weight: 900; margin-top: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .toast { background: var(--neon-green); color: #000; padding: 12px 30px; border-radius: 50px; font-weight: 900; margin-top: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); border: 1px solid #fff; }
+        .toast.warning { background: var(--neon-red); color: #fff; }
+        .hidden { display: none !important; }
+        .admin-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid var(--glass-border); margin-bottom: 5px; background: rgba(0,0,0,0.2); border-radius: 8px; }
         
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 10px; border-bottom: 1px solid var(--glass-border); text-align: center; }
+
+        #identity-enforcement-screen { position: fixed; inset: 0; background: #020617; z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(50px); }
     </style>
 </head>
 <body>
 
-    <div id="yahya-lock-screen" class="full-lock">
+    <div id="identity-enforcement-screen" class="hidden">
+        <div class="yahya-card" style="border-color: var(--neon-blue);">
+            <h2 style="color:var(--neon-blue)">إعداد هوية النظام</h2>
+            <p style="font-size: 0.8rem; margin-bottom: 20px;">يجب تثبيت بيانات المحل لمرة واحدة لتتمكن من تشغيل النظام.</p>
+            <input type="text" id="setup-shop-name" placeholder="اسم المحل">
+            <input type="number" id="setup-hour-price" placeholder="سعر الساعة">
+            <div style="margin: 10px 0; text-align: right;">
+                <label style="font-size: 0.7rem; color: var(--neon-gold); display: block; margin-bottom: 5px;">شعار المحل:</label>
+                <input type="file" id="setup-logo-input" accept="image/*" onchange="handleSetupLogo(this)">
+            </div>
+            <button class="btn-green" onclick="lockSystemIdentity()">حفظ وتثبيت الهوية ✅</button>
+        </div>
+    </div>
+
+    <div id="yahya-lock-screen">
         <div class="yahya-card">
             <h1 style="color:var(--neon-gold)">YAHYA G-PRO</h1>
-            <p id="yahya-status">بانتظار التفعيل...</p>
+            <p id="yahya-status">جاري التحقق من التفعيل...</p>
+            <div id="request-section" style="background:rgba(255,255,255,0.03); padding:15px; border-radius:15px; margin-bottom:15px; border:1px dashed var(--glass-border)">
+                <small style="color:var(--neon-blue)">طلب اشتراك جديد</small>
+                <input type="text" id="req-name" placeholder="اسم المحل">
+                <input type="text" id="req-tel" placeholder="رقم الجوال">
+                <button class="btn-blue" id="btnSendOrder">إرسال الطلب ليحيى 🚀</button>
+            </div>
             <input type="text" id="yahya-key-input" placeholder="أدخل كود التفعيل">
             <button class="btn-green" id="btnActivate">تفعيل النظام ✅</button>
-            <hr style="opacity:0.1; margin: 15px 0;">
-            <small style="color:var(--neon-blue)">ليس لديك كود؟ تواصل مع يحيى</small>
         </div>
     </div>
 
     <div id="login-screen" class="full-lock hidden">
         <div class="modal-content">
-            <h1 style="color:var(--neon-blue)">تسجيل الدخول</h1>
+            <h1 style="color:var(--neon-blue)">G-PRO SYSTEM</h1>
             <select id="login-u-list"></select>
             <input type="password" id="login-p" placeholder="كلمة السر">
-            <button class="btn-blue" onclick="handleLogin()">دخول</button>
+            <button class="btn-blue" onclick="handleLogin()">دخول النظام</button>
         </div>
     </div>
 
-    <aside class="sidebar">
+    <div id="toast-container"></div>
+
+    <div id="open-shift-screen" class="full-lock hidden">
+        <div class="modal-content">
+            <h2 style="color:var(--neon-green)">رصيد افتتاح الشفت</h2>
+            <input type="number" id="drawer-amount" placeholder="المبلغ الموجود بالدرج">
+            <button class="btn-green" onclick="startShift()">تأكيد الافتتاح</button>
+        </div>
+    </div>
+
+    <aside class="sidebar" id="sidebar-yahya">
         <div class="logo-box">
             <img id="side-logo-img" style="display:none">
             <span id="logo-text" style="font-size:2.5rem; font-weight:900; color:var(--neon-blue)">G</span>
         </div>
         <h2 id="shop-name-side" style="text-align:center; color:var(--neon-blue); margin:0">G-PRO</h2>
-        <div id="sub-timer-display" style="text-align:center; font-size:0.7rem; color:var(--neon-gold); margin:10px 0; display:none;"></div>
-        
+        <div id="sub-timer-display">متبقي: --</div>
         <nav>
             <div class="nav-item active" onclick="showPage('main', this)">🖥️ الشاشات</div>
             <div class="nav-item" onclick="showPage('cash', this)">💰 الخزينة</div>
             <div class="nav-item" onclick="showPage('reports', this)">📜 السجلات</div>
             <div class="nav-item" id="nav-admin" onclick="showPage('settings', this)">⚙️ الإدارة</div>
             
-            <hr style="opacity:0.1; margin: 20px 0;">
-            
-            <a href="https://wa.me/966546083283" target="_blank" class="dev-contact-btn btn-wa">WhatsApp</a>
-            <a href="https://www.instagram.com/yahya.exe.v1/" target="_blank" class="dev-contact-btn btn-ig">Instagram</a>
+            <div style="margin-top: 15px; padding: 12px; border: 1px solid rgba(0, 210, 255, 0.2); border-radius: 15px; background: rgba(0, 0, 0, 0.4);">
+                <small style="color: var(--neon-blue); display: block; margin-bottom: 8px; font-size: 0.7rem; font-weight: bold;">تواصل مع المطور:</small>
+                <a href="https://wa.me/966546083283" target="_blank" style="text-decoration: none; display: flex; align-items: center; gap: 8px; color: #25D366; font-weight: bold; font-size: 0.85rem; margin-bottom: 8px;">
+                    <span>🟢 WhatsApp</span>
+                </a>
+                <a href="https://www.instagram.com/yahya.exe.v1/" target="_blank" style="text-decoration: none; display: flex; align-items: center; gap: 8px; color: #E1306C; font-weight: bold; font-size: 0.85rem;">
+                    <span>📸 Instagram</span>
+                </a>
+            </div>
 
             <button class="btn-red" onclick="location.reload()" style="margin-top:20px">خروج 🔒</button>
         </nav>
     </aside>
 
     <main class="main-content">
-        <div id="toast-container"></div>
-        
         <div class="header-top" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px">
-            <h1 id="page-title">لوحة التحكم</h1>
-            <div style="background:var(--glass-heavy); padding:10px 20px; border-radius:15px; border:1px solid var(--neon-blue)">
-                <div id="digital-clock" style="font-family:monospace; font-size:1.5rem; color:var(--neon-blue)">00:00:00</div>
+            <div style="display:flex; gap:10px">
+                <div class="stat-card active-filter" id="filter-all" onclick="setFilter('all')">الكل: <span id="count-all">0</span></div>
+                <div class="stat-card" id="filter-free" onclick="setFilter('free')">متاح: <span id="count-free">0</span></div>
+                <div class="stat-card" id="filter-busy" onclick="setFilter('busy')">لعب: <span id="count-busy">0</span></div>
+                <div class="stat-card" id="filter-booked" onclick="setFilter('booked')">حجز: <span id="count-booked">0</span></div>
+            </div>
+            <div class="date-time-container">
+                <div id="digital-clock">00:00:00</div>
+                <div class="date-row">
+                    <span id="day-name" style="color:var(--neon-gold)">--</span>
+                    <span id="date-h">--/--/----</span>
+                    <span id="date-g" style="opacity:0.6">--/--/----</span>
+                </div>
             </div>
         </div>
 
         <div id="main-page" class="page"><div class="grid" id="pc-grid"></div></div>
 
         <div id="cash-page" class="page hidden">
-            <div class="glass-card">
-                <h3>💰 حالة الصندوق</h3>
-                <h2 id="total-drawer-view" style="color:var(--neon-green)">0</h2>
-                <button class="btn-red" onclick="closeShift()">إغلاق الشفت</button>
+            <div class="grid">
+                <div class="glass-card">
+                    <h3>💰 الصندوق الحالي</h3>
+                    <p>الافتتاحي: <span id="start-drawer-view">0</span></p>
+                    <p>المبيعات: <span id="sales-view">0</span></p>
+                    <h2 id="total-drawer-view" style="color:var(--neon-green)">0</h2>
+                    <button class="btn-red" onclick="closeShift()">إغلاق الشفت</button>
+                </div>
+                <div class="glass-card">
+                    <h3>🖥️ سجل تصفية الأجهزة (الشفت الحالي)</h3>
+                    <div style="max-height:200px; overflow-y:auto">
+                        <table>
+                            <thead><tr><th>الجهاز</th><th>المبلغ</th><th>الوقت</th></tr></thead>
+                            <tbody id="current-pc-sales"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div id="reports-page" class="page hidden">
             <div class="glass-card">
-                <h3>📜 التقارير السابقة</h3>
-                <table id="reports-table">
-                    <thead><tr><th>التاريخ</th><th>الموظف</th><th>المبيعات</th></tr></thead>
-                    <tbody id="shift-logs-body"></tbody>
-                </table>
+                <h3>📜 سجل الشفتات المغلقة</h3>
+                <div style="max-height:400px; overflow-y:auto">
+                    <table style="width:100%">
+                        <thead style="color:var(--neon-blue)"><tr><th>التاريخ</th><th>الموظف</th><th>المبيعات</th></tr></thead>
+                        <tbody id="shift-logs-body"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
         <div id="settings-page" class="page hidden">
             <div class="grid">
                 <div class="glass-card">
-                    <h3>👥 الموظفين</h3>
-                    <input type="text" id="staff-name" placeholder="الاسم">
-                    <input type="password" id="staff-pass" placeholder="السر">
-                    <button class="btn-green" onclick="addStaff()">إضافة موظف</button>
+                    <h3>🏠 الإعدادات (الهوية مثبتة)</h3>
+                    <input type="text" id="set-shop-name" disabled>
+                    <input type="number" id="set-hour-price" disabled>
+                    <p style="color:var(--neon-gold); font-size: 0.7rem;">🔒 الهوية مثبتة بواسطة المطور ولا يمكن تغييرها.</p>
+                    <button class="btn-outline" id="yahya-info-btn" onclick="triggerInfoRequest()">طلب تعديل البيانات (فتح القفل)</button>
+                    <hr style="opacity:0.1; margin:15px 0">
+                    <h4 style="color:var(--neon-gold)">تغيير كلمة سر المدير</h4>
+                    <input type="password" id="admin-new-pass" placeholder="كلمة سر المدير الجديدة">
+                    <button class="btn-green" onclick="changeAdminPass()">تحديث كلمة السر</button>
                 </div>
                 <div class="glass-card">
-                    <h3>🖥️ الشاشات</h3>
-                    <button class="btn-blue" onclick="addNewPC()">إضافة شاشة جديدة +</button>
+                    <h3>👥 الموظفين</h3>
+                    <input type="text" id="staff-name" placeholder="الاسم"><input type="password" id="staff-pass" placeholder="كلمة السر">
+                    <button class="btn-green" onclick="addStaff()">إضافة</button>
+                    <div id="staff-list"></div>
+                </div>
+                <div class="glass-card">
+                    <h3>🖥️ الأجهزة (إدارة الشاشات)</h3>
+                    <button class="btn-green" onclick="addNewPC()">إضافة شاشة +</button>
+                    <hr style="opacity:0.1; margin:15px 0">
+                    <div id="admin-pc-list"></div>
+                </div>
+                <div class="glass-card">
+                    <h3>🍔 المنيو</h3>
+                    <input type="text" id="m-n" placeholder="الصنف"><input type="number" id="m-p" placeholder="السعر">
+                    <button class="btn-blue" onclick="addMenu()">إضافة للمنيو</button>
+                    <div id="admin-menu-list"></div>
+                </div>
+                <div class="glass-card" style="border: 1px solid var(--neon-red)">
+                    <h3 style="color: var(--neon-red)">المنطقة الخطرة ⛔</h3>
+                    <button class="btn-red" id="yahya-factory-btn" onclick="triggerResetRequest()">إعادة ضبط المصنع ⚠️</button>
                 </div>
             </div>
         </div>
     </main>
 
-    <div id="modal-start" class="modal"><div class="modal-content"><h3>بدء التشغيل</h3><input type="text" id="c-name" placeholder="اسم الزبون"><button class="btn-green" onclick="confirmStart()">بدء</button><button onclick="closeModal('modal-start')">إلغاء</button></div></div>
-    <div id="modal-invoice" class="modal"><div class="modal-content"><h2>تصفية الحساب</h2><div id="invoice-data"></div><button class="btn-red" id="confirm-finish-btn">إنهاء</button></div></div>
+    <div id="modal-start" class="modal"><div class="modal-content"><h3>🎮 تشغيل جهاز</h3><input type="text" id="c-name" placeholder="اسم الزبون"><input type="number" id="c-limit" placeholder="تحديد وقت (بالدقائق)"><button class="btn-green" onclick="confirmStart()">بدء</button><button onclick="closeModal('modal-start')">إلغاء</button></div></div>
+    <div id="modal-book" class="modal"><div class="modal-content"><h3>📅 حجز مؤقت (30 دقيقة)</h3><input type="text" id="b-name" placeholder="اسم الحاجز"><button class="btn-red" onclick="confirmBooking()">تأكيد حجز</button><button onclick="closeModal('modal-book')">إلغاء</button></div></div>
+    <div id="modal-menu" class="modal"><div class="modal-content"><h3>🛒 المنيو</h3><div id="menu-items-list" style="display:grid; grid-template-columns:1fr 1fr; gap:10px"></div><button onclick="closeModal('modal-menu')">إغلاق</button></div></div>
+    <div id="modal-invoice" class="modal"><div class="modal-content"><h2>🧾 التصفية</h2><div id="invoice-data" style="text-align:right; margin:15px 0; line-height:1.8"></div><h2 id="net-total" style="color:var(--neon-green)">0</h2><button class="btn-red" id="confirm-finish-btn">إنهاء الحساب</button><button class="btn-outline" onclick="closeModal('modal-invoice')">إلغاء</button></div></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         
         const firebaseConfig = { apiKey: "AIzaSyCgkVly9SjQc5ZCeVVmWayhovnIZ7twJOE", authDomain: "gamerprorequests.firebaseapp.com", projectId: "gamerprorequests", storageBucket: "gamerprorequests.firebasestorage.app", messagingSenderId: "1051539622855", appId: "1:1051539622855:web:02179abd0152ae4e8527e2" };
         const app = initializeApp(firebaseConfig); 
         const dbFs = getFirestore(app);
 
+        let cloudResetCredits = 0;
+        let cloudInfoCredits = 0;
+        let lastKnownReset = 0;
+        let lastKnownInfo = 0;
+
+        window.startSubTimer = (expiryDate) => {
+            const timerEl = document.getElementById('sub-timer-display'); timerEl.style.display = 'block';
+            const update = () => {
+                const now = new Date().getTime(); const diff = expiryDate - now;
+                if (diff <= 0) { localStorage.removeItem('YAHYA_GPRO_KEY'); location.reload(); }
+                else {
+                    const months = Math.floor(diff / (1000 * 60 * 60 * 24 * 30.44));
+                    const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 30.44)) / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    timerEl.innerHTML = `متبقي على الاشتراك:<br>${months} ش و ${days} ي و ${hours} س`;
+                }
+            };
+            update(); setInterval(update, 60000);
+        }
+
         window.checkSubscription = (inputKey) => {
             const q = query(collection(dbFs, "active_keys"), where("key", "==", inputKey));
             onSnapshot(q, (snap) => {
                 if (!snap.empty) {
+                    const data = snap.docs[0].data();
                     localStorage.setItem('YAHYA_GPRO_KEY', inputKey);
                     document.getElementById('yahya-lock-screen').style.display = 'none';
                     document.getElementById('login-screen').classList.remove('hidden');
+                    
+                    cloudResetCredits = data.resetCredits || 0;
+                    cloudInfoCredits = data.infoCredits || 0;
+
+                    if (cloudInfoCredits > lastKnownInfo && lastKnownInfo !== undefined) handleAutoInfoUnlock(snap.docs[0].id);
+                    if (cloudResetCredits > lastKnownReset && lastKnownReset !== undefined) handleAutoFactoryReset(snap.docs[0].id);
+
+                    lastKnownReset = cloudResetCredits;
+                    lastKnownInfo = cloudInfoCredits;
+
+                    if(data.expiryDate) startSubTimer(data.expiryDate);
+                    
+                    const btnR = document.getElementById('yahya-factory-btn');
+                    if(btnR) btnR.innerText = cloudResetCredits > 0 ? `تأكيد الفرمتة (رصيد: ${cloudResetCredits}) ⚠️` : "طلب فرمتة من يحيى ➕";
+                    
+                    const btnI = document.getElementById('yahya-info-btn');
+                    if(btnI) btnI.innerText = cloudInfoCredits > 0 ? `فتح قفل الهوية (رصيد: ${cloudInfoCredits}) ✅` : "طلب تعديل البيانات (فتح القفل)";
                 } else {
-                    alert("كود غير صحيح!");
+                    document.getElementById('yahya-status').innerText = "الكود غير صحيح أو منتهي!";
                 }
             });
         };
-        const savedKey = localStorage.getItem('YAHYA_GPRO_KEY'); if(savedKey) window.checkSubscription(savedKey);
+
+        async function handleAutoInfoUnlock(docId) {
+            await updateDoc(doc(dbFs, "active_keys", docId), { infoCredits: cloudInfoCredits - 1 });
+            let localDb = JSON.parse(localStorage.getItem('GPRO_V41'));
+            if(localDb) { localDb.shop.isConfigured = false; localStorage.setItem('GPRO_V41', JSON.stringify(localDb)); }
+            alert("✅ وافق يحيى على طلبك. يمكنك الآن تعديل اسم المحل والسعر.");
+            location.reload();
+        }
+
+        async function handleAutoFactoryReset(docId) {
+            await updateDoc(doc(dbFs, "active_keys", docId), { resetCredits: cloudResetCredits - 1 });
+            localStorage.removeItem('GPRO_V41');
+            alert("⚠️ تم قبول طلب الفرمتة. سيتم مسح البيانات الآن.");
+            location.reload();
+        }
+
+        window.triggerResetRequest = async () => {
+            if (cloudResetCredits > 0) {
+                 handleAutoFactoryReset( (await getDocs(query(collection(dbFs, "active_keys"), where("key", "==", localStorage.getItem('YAHYA_GPRO_KEY'))))).docs[0].id );
+            } else {
+                if(confirm("إرسال طلب فرمتة ليحيى؟")) {
+                    await addDoc(collection(dbFs, "requests"), { store: db.shop.name || 'غير معروف', storeKey: localStorage.getItem('YAHYA_GPRO_KEY'), type: 'reset', time: serverTimestamp() });
+                    alert("تم إرسال الطلب. انتظر موافقة يحيى...");
+                }
+            }
+        };
+
+        window.triggerInfoRequest = async () => {
+            if (cloudInfoCredits > 0) {
+                handleAutoInfoUnlock( (await getDocs(query(collection(dbFs, "active_keys"), where("key", "==", localStorage.getItem('YAHYA_GPRO_KEY'))))).docs[0].id );
+            } else {
+                if(confirm("إرسال طلب فتح قفل الهوية ليحيى؟")) {
+                    await addDoc(collection(dbFs, "requests"), { store: db.shop.name || 'غير معروف', storeKey: localStorage.getItem('YAHYA_GPRO_KEY'), type: 'info', time: serverTimestamp() });
+                    alert("تم إرسال الطلب. انتظر موافقة يحيى...");
+                }
+            }
+        };
+
         document.getElementById('btnActivate').onclick = () => window.checkSubscription(document.getElementById('yahya-key-input').value);
+        document.getElementById('btnSendOrder').onclick = async () => {
+            let n = document.getElementById('req-name').value, t = document.getElementById('req-tel').value;
+            if(n && t) { await addDoc(collection(dbFs, "requests"), { store: n, phone: t, status: "pending", time: serverTimestamp(), type: 'new' }); alert("تم الإرسال!"); }
+        };
+        const savedKey = localStorage.getItem('YAHYA_GPRO_KEY'); if(savedKey) window.checkSubscription(savedKey);
     </script>
 
     <script>
+        let currentFilter = 'all';
         let db = JSON.parse(localStorage.getItem('GPRO_V41')) || {
-            shop: { name: "G-PRO", logo: "" }, staff: [{u: "مدير", p: "123"}],
-            devices: [], currentSales: 0, shiftLogs: [], defPrice: 20000
+            shop: { name: "", logo: "", isConfigured: false }, staff: [{u: "مدير", p: "123"}],
+            devices: [], menu: [], shiftLogs: [], currentSales: 0, startDrawer: 0, isShiftOpen: false, defPrice: 25000, currentUser: "", pcHistory: []
         };
+        let tempLogo = db.shop.logo;
         let actionTarget = null;
 
         function save() { localStorage.setItem('GPRO_V41', JSON.stringify(db)); render(); }
-
-        function render() {
-            document.getElementById('login-u-list').innerHTML = db.staff.map(s => `<option value="${s.u}">${s.u}</option>`).join('');
-            document.getElementById('total-drawer-view').innerText = db.currentSales.toLocaleString() + " ل.س";
-            document.getElementById('pc-grid').innerHTML = db.devices.map(d => `
-                <div class="glass-card" style="border-top:3px solid ${d.active?'var(--neon-green)':'var(--neon-blue)'}">
-                    <b>${d.name}</b><br><small>${d.active ? d.client : 'متاح'}</small>
-                    <div id="t-${d.id}" style="font-size:1.5rem; margin:10px 0">00:00:00</div>
-                    ${d.active ? `<button class="btn-red" onclick="stopSession(${d.id})">تصفية</button>` : `<button class="btn-green" onclick="openStart(${d.id})">بدء</button>`}
-                </div>`).join('');
+        
+        function showToast(msg, isWarning = false) {
+            let t=document.createElement('div'); t.className= isWarning ? 'toast warning' : 'toast'; 
+            t.innerText=msg; document.getElementById('toast-container').appendChild(t); 
+            setTimeout(()=>t.remove(),3000);
         }
+
+        window.handleSetupLogo = (input) => {
+            if (input.files && input.files[0]) {
+                let reader = new FileReader();
+                reader.onload = (e) => { tempLogo = e.target.result; };
+                reader.readAsDataURL(input.files[0]);
+            }
+        };
+
+        window.lockSystemIdentity = () => {
+            let n = document.getElementById('setup-shop-name').value;
+            let p = document.getElementById('setup-hour-price').value;
+            if(!n || !p || !tempLogo) { alert("نقص بيانات!"); return; }
+            db.shop.name = n; db.defPrice = parseInt(p); db.shop.logo = tempLogo; db.shop.isConfigured = true;
+            save(); alert("تم التثبيت ✅"); location.reload();
+        };
 
         window.handleLogin = () => {
             let u = document.getElementById('login-u-list').value, p = document.getElementById('login-p').value;
-            if(db.staff.find(s=>s.u===u && s.p===p)) { document.getElementById('login-screen').classList.add('hidden'); render(); } else alert("خطأ!");
-        };
+            let user = db.staff.find(s => s.u === u && s.p === p);
+            if(user) {
+                db.currentUser = u; 
+                document.getElementById('login-screen').style.display='none';
+                if(!db.shop.isConfigured) document.getElementById('identity-enforcement-screen').classList.remove('hidden');
+                else if(!db.isShiftOpen) document.getElementById('open-shift-screen').classList.remove('hidden');
+                if(u !== "مدير") document.getElementById('nav-admin').classList.add('hidden');
+                render();
+            } else alert("خطأ!");
+        }
 
+        window.changeAdminPass = () => { let p = document.getElementById('admin-new-pass').value; if(p.length > 2) { db.staff.find(s=>s.u==='مدير').p = p; save(); showToast("تم تحديث الباسورد"); } };
+        window.startShift = () => { db.startDrawer = parseInt(document.getElementById('drawer-amount').value) || 0; db.isShiftOpen = true; db.pcHistory = []; save(); document.getElementById('open-shift-screen').classList.add('hidden'); }
+        window.closeShift = () => { if(confirm("إغلاق؟")) { db.shiftLogs.push({ date: new Date().toLocaleDateString(), user: db.currentUser, sales: db.currentSales }); db.currentSales=0; db.isShiftOpen=false; save(); location.reload(); } }
+        
         window.showPage = (p, btn) => {
-            document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));
+            document.querySelectorAll('.page').forEach(x => x.classList.add('hidden'));
             document.getElementById(p+'-page').classList.remove('hidden');
-            document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
             btn.classList.add('active');
         };
 
-        window.addNewPC = () => { db.devices.push({id:Date.now(), name:"شاشة "+(db.devices.length+1), active:false}); save(); };
-        window.openStart = (id) => { actionTarget=id; document.getElementById('modal-start').style.display='flex'; };
-        window.closeModal = (id) => document.getElementById(id).style.display='none';
+        window.setFilter = (f) => { currentFilter = f; document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active-filter')); document.getElementById('filter-'+f).classList.add('active-filter'); render(); };
+        
+        window.deletePC = (id) => {
+            let d = db.devices.find(x => x.id === id);
+            if(d.active) { showToast("لا يمكن حذف جهاز قيد التشغيل!", true); return; }
+            if(confirm(`حذف ${d.name}؟`)) { db.devices = db.devices.filter(x => x.id !== id); save(); }
+        };
 
-        window.confirmStart = () => {
-            let d = db.devices.find(x=>x.id===actionTarget);
-            d.active=true; d.client=document.getElementById('c-name').value || "زبون"; d.start=Date.now();
-            closeModal('modal-start'); save();
+        function render() {
+            if(db.shop.logo) { document.getElementById('side-logo-img').src = db.shop.logo; document.getElementById('side-logo-img').style.display = 'block'; document.getElementById('logo-text').style.display = 'none'; }
+            document.getElementById('shop-name-side').innerText = db.shop.name || "G-PRO";
+            document.getElementById('set-shop-name').value = db.shop.name;
+            document.getElementById('set-hour-price').value = db.defPrice;
+            document.getElementById('login-u-list').innerHTML = db.staff.map(s => `<option value="${s.u}">${s.u}</option>`).join('');
+            document.getElementById('sales-view').innerText = db.currentSales.toLocaleString();
+            document.getElementById('start-drawer-view').innerText = db.startDrawer.toLocaleString();
+            document.getElementById('total-drawer-view').innerText = (db.startDrawer + db.currentSales).toLocaleString();
+            document.getElementById('count-all').innerText = db.devices.length;
+            document.getElementById('count-free').innerText = db.devices.filter(x=>!x.active && !x.booked).length;
+            document.getElementById('count-busy').innerText = db.devices.filter(x=>x.active).length;
+            document.getElementById('count-booked').innerText = db.devices.filter(x=>x.booked).length;
+            
+            document.getElementById('sidebar-yahya').style.pointerEvents = db.shop.isConfigured ? 'auto' : 'none';
+            document.getElementById('sidebar-yahya').style.opacity = db.shop.isConfigured ? '1' : '0.5';
+
+            let filtered = db.devices.filter(d => {
+                if(currentFilter === 'free') return !d.active && !d.booked;
+                if(currentFilter === 'busy') return d.active;
+                if(currentFilter === 'booked') return d.booked;
+                return true;
+            });
+
+            document.getElementById('pc-grid').innerHTML = filtered.map(d => `
+                <div class="glass-card" style="border-top:3px solid ${d.active?'var(--neon-green)':(d.booked?'var(--neon-gold)':'var(--neon-blue)')}">
+                    <b>${d.name}</b><br><small>${d.active?d.client:(d.booked?'حجز: '+d.client:'متاح')}</small>
+                    <div style="font-size:1.5rem; margin:10px 0" id="t-${d.id}">00:00:00</div>
+                    ${d.active ? `<button class="btn-blue" onclick="openMenu(${d.id})">🍔 طلب</button><button class="btn-red" onclick="stopSession(${d.id})">تصفية</button>` : 
+                    `<button class="btn-green" onclick="openAction(${d.id}, 'start')">${d.booked?'تفعيل':'بدء'}</button>${!d.booked?`<button class="btn-red" onclick="openAction(${d.id}, 'book')">حجز</button>`:''}`}
+                </div>`).join('');
+
+            document.getElementById('current-pc-sales').innerHTML = db.pcHistory.map(h => `<tr><td>${h.pc}</td><td>${h.amount.toLocaleString()}</td><td>${h.time}</td></tr>`).join('');
+            document.getElementById('shift-logs-body').innerHTML = db.shiftLogs.map(l => `<tr><td>${l.date}</td><td>${l.user}</td><td>${l.sales.toLocaleString()}</td></tr>`).join('');
+            document.getElementById('staff-list').innerHTML = db.staff.map(s => `<div class="admin-item"><span>👤 ${s.u}</span> ${s.u!=='مدير'?`<span onclick="db.staff=db.staff.filter(x=>x.u!='${s.u}'); save()" style="cursor:pointer">✖</span>`:''}</div>`).join('');
+            document.getElementById('admin-menu-list').innerHTML = db.menu.map(m => `<div class="admin-item"><span>🍔 ${m.name} (${m.price})</span><span onclick="db.menu=db.menu.filter(x=>x.id!=${m.id}); save()" style="cursor:pointer">✖</span></div>`).join('');
+            document.getElementById('admin-pc-list').innerHTML = db.devices.map(d => `<div class="admin-item"><span>🖥️ ${d.name}</span><span onclick="deletePC(${d.id})" style="cursor:pointer; color:var(--neon-red); font-weight:bold">حذف ✖</span></div>`).join('');
+        }
+
+        window.addNewPC = () => { db.devices.push({id:Date.now(), name:"جهاز "+(db.devices.length+1), active:false, booked:false, orders:[]}); save(); };
+        window.openModal = (id) => document.getElementById(id).style.display = 'flex';
+        window.closeModal = (id) => document.getElementById(id).style.display = 'none';
+
+        window.openAction = (id, type) => { actionTarget = id; openModal(type==='start'?'modal-start':'modal-book'); };
+        
+        window.confirmStart = () => { 
+            let d=db.devices.find(x=>x.id===actionTarget); 
+            d.active=true; d.booked=false; d.start=Date.now(); 
+            d.client=document.getElementById('c-name').value||"زبون"; 
+            d.limit=parseInt(document.getElementById('c-limit').value)||0; 
+            d.alerted=false; d.orders = []; 
+            closeModal('modal-start'); save(); 
+        };
+
+        window.confirmBooking = () => { 
+            let d=db.devices.find(x=>x.id===actionTarget); 
+            d.booked=true; d.start=Date.now(); d.limit=30; 
+            d.client=document.getElementById('b-name').value||"حجز"; 
+            closeModal('modal-book'); save(); 
         };
 
         window.stopSession = (id) => {
-            let d = db.devices.find(x=>x.id===id);
-            let mins = (Date.now() - d.start) / 60000;
-            let cost = Math.round((mins * db.defPrice) / 60);
-            document.getElementById('invoice-data').innerHTML = `الوقت: ${Math.ceil(mins)} دقيقة<br>الحساب: ${cost} ل.س`;
+            let d=db.devices.find(x=>x.id===id); let min = (Date.now() - d.start) / 60000;
+            let pCost = Math.round((min * db.defPrice) / 60); let mCost = d.orders.reduce((a,b)=>a+b.price, 0);
+            let total = pCost + mCost;
+            document.getElementById('invoice-data').innerHTML = `<b>الجهاز:</b> ${d.name}<br><b>الوقت المستغرق:</b> ${Math.ceil(min)} دقيقة<br><b>حساب اللعب:</b> ${pCost.toLocaleString()} ل.س<br><b>حساب المنيو:</b> ${mCost.toLocaleString()} ل.س`;
+            document.getElementById('net-total').innerText = total.toLocaleString() + " ل.س";
             document.getElementById('confirm-finish-btn').onclick = () => {
-                db.currentSales += cost; d.active = false; closeModal('modal-invoice'); save();
+                db.currentSales += total;
+                db.pcHistory.unshift({ pc: d.name, amount: total, time: new Date().toLocaleTimeString('ar-EG') });
+                d.active = false;
+                d.orders = [];
+                closeModal('modal-invoice');
+                save();
+                showToast("تمت التصفية بنجاح");
             };
-            document.getElementById('modal-invoice').style.display='flex';
+            openModal('modal-invoice');
+        };
+
+        window.openMenu = (id) => {
+            actionTarget = id;
+            document.getElementById('menu-items-list').innerHTML = db.menu.map(m => `
+                <button class="btn-outline" onclick="addOrderToPC(${m.id})">
+                    ${m.name}<br><small>${m.price.toLocaleString()}</small>
+                </button>`).join('');
+            openModal('modal-menu');
+        };
+
+        window.addOrderToPC = (menuId) => {
+            let item = db.menu.find(x => x.id === menuId);
+            let d = db.devices.find(x => x.id === actionTarget);
+            d.orders.push({...item});
+            showToast(`تم إضافة ${item.name}`);
+        };
+
+        window.addMenu = () => {
+            let n = document.getElementById('m-n').value, p = parseInt(document.getElementById('m-p').value);
+            if(n && p) { db.menu.push({id: Date.now(), name: n, price: p}); save(); }
         };
 
         window.addStaff = () => {
-            let u=document.getElementById('staff-name').value, p=document.getElementById('staff-pass').value;
+            let u = document.getElementById('staff-name').value, p = document.getElementById('staff-pass').value;
             if(u && p) { db.staff.push({u, p}); save(); }
         };
 
         setInterval(() => {
-            document.getElementById('digital-clock').innerText = new Date().toLocaleTimeString('ar-EG');
+            const now = new Date();
+            if(document.getElementById('digital-clock')) document.getElementById('digital-clock').innerText = now.toLocaleTimeString('ar-EG');
+            if(document.getElementById('day-name')) document.getElementById('day-name').innerText = now.toLocaleDateString('ar-EG', {weekday: 'long'});
+            if(document.getElementById('date-g')) document.getElementById('date-g').innerText = now.toLocaleDateString('en-GB');
+            if(document.getElementById('date-h')) document.getElementById('date-h').innerText = now.toLocaleDateString('ar-SA');
+
             db.devices.forEach(d => {
-                if(d.active) {
+                if(d.active || d.booked) {
                     let diff = Date.now() - d.start;
-                    let h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
+                    let sec = Math.floor(diff/1000), min = Math.floor(sec/60), hr = Math.floor(min/60);
+                    let display = `${(hr%24).toString().padStart(2,'0')}:${(min%60).toString().padStart(2,'0')}:${(sec%60).toString().padStart(2,'0')}`;
                     let el = document.getElementById('t-'+d.id);
-                    if(el) el.innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                    if(el) el.innerText = display;
+
+                    if(d.limit > 0 && min >= d.limit && !d.alerted) {
+                        showToast(`⚠️ انتهى وقت ${d.name}`, true);
+                        d.alerted = true;
+                    }
                 }
             });
         }, 1000);
