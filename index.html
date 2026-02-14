@@ -91,8 +91,7 @@
         <div class="modal-content">
             <h1 style="color:var(--neon-blue)">G-PRO SYSTEM</h1>
             <select id="login-u-list">
-                <option value="مدير">مدير</option>
-            </select>
+                </select>
             <input type="password" id="login-p" placeholder="كلمة السر">
             <button class="btn-blue" onclick="handleLogin()">دخول النظام</button>
         </div>
@@ -126,9 +125,6 @@
                 <a href="https://wa.me/966546083283" target="_blank" style="text-decoration: none; display: flex; align-items: center; gap: 8px; color: #25D366; font-weight: bold; font-size: 0.85rem; margin-bottom: 8px;">
                     <span>🟢 WhatsApp</span>
                 </a>
-                <a href="https://www.instagram.com/yahya.exe.v1/" target="_blank" style="text-decoration: none; display: flex; align-items: center; gap: 8px; color: #E1306C; font-weight: bold; font-size: 0.85rem;">
-                    <span>📸 Instagram</span>
-                </a>
             </div>
 
             <button class="btn-red" onclick="location.reload()" style="margin-top:20px">خروج 🔒</button>
@@ -141,7 +137,6 @@
                 <div class="stat-card active-filter" id="filter-all" onclick="setFilter('all')">الكل: <span id="count-all">0</span></div>
                 <div class="stat-card" id="filter-free" onclick="setFilter('free')">متاح: <span id="count-free">0</span></div>
                 <div class="stat-card" id="filter-busy" onclick="setFilter('busy')">لعب: <span id="count-busy">0</span></div>
-                <div class="stat-card" id="filter-booked" onclick="setFilter('booked')">حجز: <span id="count-booked">0</span></div>
             </div>
             <div class="date-time-container">
                 <div id="digital-clock">00:00:00</div>
@@ -156,23 +151,12 @@
         <div id="main-page" class="page"><div class="grid" id="pc-grid"></div></div>
 
         <div id="cash-page" class="page hidden">
-            <div class="grid">
-                <div class="glass-card">
-                    <h3>💰 الصندوق الحالي</h3>
-                    <p>الافتتاحي: <span id="start-drawer-view">0</span></p>
-                    <p>المبيعات: <span id="sales-view">0</span></p>
-                    <h2 id="total-drawer-view" style="color:var(--neon-green)">0</h2>
-                    <button class="btn-red" onclick="closeShift()">إغلاق الشفت</button>
-                </div>
-                <div class="glass-card">
-                    <h3>🖥️ سجل تصفية الأجهزة (الشفت الحالي)</h3>
-                    <div style="max-height:200px; overflow-y:auto">
-                        <table>
-                            <thead><tr><th>الجهاز</th><th>المبلغ</th><th>الوقت</th></tr></thead>
-                            <tbody id="current-pc-sales"></tbody>
-                        </table>
-                    </div>
-                </div>
+            <div class="glass-card">
+                <h3>💰 الصندوق الحالي</h3>
+                <p>الافتتاحي: <span id="start-drawer-view">0</span></p>
+                <p>المبيعات: <span id="sales-view">0</span></p>
+                <h2 id="total-drawer-view" style="color:var(--neon-green)">0</h2>
+                <button class="btn-red" onclick="closeShift()">إغلاق الشفت</button>
             </div>
         </div>
 
@@ -191,12 +175,7 @@
         <div id="settings-page" class="page hidden">
             <div class="grid">
                 <div class="glass-card">
-                    <h3>🏠 الإعدادات (الهوية مثبتة)</h3>
-                    <input type="text" id="set-shop-name" disabled>
-                    <input type="number" id="set-hour-price" disabled>
-                    <p style="color:var(--neon-gold); font-size: 0.7rem;">🔒 الهوية مثبتة بواسطة المطور ولا يمكن تغييرها.</p>
-                    <button class="btn-outline" id="yahya-info-btn" onclick="triggerInfoRequest()">طلب تعديل البيانات (فتح القفل)</button>
-                    <hr style="opacity:0.1; margin:15px 0">
+                    <h3>🏠 الإدارة</h3>
                     <h4 style="color:var(--neon-gold)">تغيير كلمة سر المدير</h4>
                     <input type="password" id="admin-new-pass" placeholder="كلمة سر المدير الجديدة">
                     <button class="btn-green" onclick="changeAdminPass()">تحديث كلمة السر</button>
@@ -208,267 +187,126 @@
                     <div id="staff-list"></div>
                 </div>
                 <div class="glass-card">
-                    <h3>🖥️ الأجهزة (إدارة الشاشات)</h3>
+                    <h3>🖥️ الأجهزة</h3>
                     <button class="btn-green" onclick="addNewPC()">إضافة شاشة +</button>
-                    <hr style="opacity:0.1; margin:15px 0">
                     <div id="admin-pc-list"></div>
                 </div>
-                <div class="glass-card">
-                    <h3>🍔 المنيو</h3>
-                    <input type="text" id="m-n" placeholder="الصنف"><input type="number" id="m-p" placeholder="السعر">
-                    <button class="btn-blue" onclick="addMenu()">إضافة للمنيو</button>
-                    <div id="admin-menu-list"></div>
-                </div>
                 <div class="glass-card" style="border: 1px solid var(--neon-red)">
-                    <h3 style="color: var(--neon-red)">المنطقة الخطرة ⛔</h3>
+                    <h3 style="color: var(--neon-red)">المنطقة الخطرة</h3>
                     <button class="btn-red" id="yahya-factory-btn" onclick="triggerResetRequest()">إعادة ضبط المصنع ⚠️</button>
                 </div>
             </div>
         </div>
     </main>
 
-    <div id="modal-start" class="modal"><div class="modal-content"><h3>🎮 تشغيل جهاز</h3><input type="text" id="c-name" placeholder="اسم الزبون"><input type="number" id="c-limit" placeholder="تحديد وقت (بالدقائق)"><button class="btn-green" onclick="confirmStart()">بدء</button><button onclick="closeModal('modal-start')">إلغاء</button></div></div>
-    <div id="modal-book" class="modal"><div class="modal-content"><h3>📅 حجز مؤقت (30 دقيقة)</h3><input type="text" id="b-name" placeholder="اسم الحاجز"><button class="btn-red" onclick="confirmBooking()">تأكيد حجز</button><button onclick="closeModal('modal-book')">إلغاء</button></div></div>
-    <div id="modal-menu" class="modal"><div class="modal-content"><h3>🛒 المنيو</h3><div id="menu-items-list" style="display:grid; grid-template-columns:1fr 1fr; gap:10px"></div><button onclick="closeModal('modal-menu')">إغلاق</button></div></div>
-    <div id="modal-invoice" class="modal"><div class="modal-content"><h2>🧾 التصفية</h2><div id="invoice-data" style="text-align:right; margin:15px 0; line-height:1.8"></div><h2 id="net-total" style="color:var(--neon-green)">0</h2><button class="btn-red" id="confirm-finish-btn">إنهاء الحساب</button><button class="btn-outline" onclick="closeModal('modal-invoice')">إلغاء</button></div></div>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         
         const firebaseConfig = { apiKey: "AIzaSyCgkVly9SjQc5ZCeVVmWayhovnIZ7twJOE", authDomain: "gamerprorequests.firebaseapp.com", projectId: "gamerprorequests", storageBucket: "gamerprorequests.firebasestorage.app", messagingSenderId: "1051539622855", appId: "1:1051539622855:web:02179abd0152ae4e8527e2" };
         const app = initializeApp(firebaseConfig); 
         const dbFs = getFirestore(app);
 
-        let cloudResetCredits = 0;
-        let cloudInfoCredits = 0;
-        let lastKnownReset = 0;
-        let lastKnownInfo = 0;
-
-        window.startSubTimer = (expiryDate) => {
-            const timerEl = document.getElementById('sub-timer-display'); timerEl.style.display = 'block';
-            const update = () => {
-                const now = new Date().getTime(); const diff = expiryDate - now;
-                if (diff <= 0) { localStorage.removeItem('YAHYA_GPRO_KEY'); location.reload(); }
-                else {
-                    const months = Math.floor(diff / (1000 * 60 * 60 * 24 * 30.44));
-                    const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 30.44)) / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    timerEl.innerHTML = `متبقي على الاشتراك:<br>${months} ش و ${days} ي و ${hours} س`;
-                }
-            };
-            update(); setInterval(update, 60000);
-        }
-
         window.checkSubscription = (inputKey) => {
             const q = query(collection(dbFs, "active_keys"), where("key", "==", inputKey));
             onSnapshot(q, (snap) => {
                 if (!snap.empty) {
-                    const data = snap.docs[0].data();
                     localStorage.setItem('YAHYA_GPRO_KEY', inputKey);
                     document.getElementById('yahya-lock-screen').style.display = 'none';
                     document.getElementById('login-screen').classList.remove('hidden');
-                    
-                    cloudResetCredits = data.resetCredits || 0;
-                    cloudInfoCredits = data.infoCredits || 0;
-
-                    if (cloudInfoCredits > lastKnownInfo && lastKnownInfo !== undefined) handleAutoInfoUnlock(snap.docs[0].id);
-                    if (cloudResetCredits > lastKnownReset && lastKnownReset !== undefined) handleAutoFactoryReset(snap.docs[0].id);
-
-                    lastKnownReset = cloudResetCredits;
-                    lastKnownInfo = cloudInfoCredits;
-
-                    if(data.expiryDate) startSubTimer(data.expiryDate);
-                    
-                    const btnR = document.getElementById('yahya-factory-btn');
-                    if(btnR) btnR.innerText = cloudResetCredits > 0 ? `تأكيد الفرمتة (رصيد: ${cloudResetCredits}) ⚠️` : "طلب فرمتة من يحيى ➕";
-                    
-                    const btnI = document.getElementById('yahya-info-btn');
-                    if(btnI) btnI.innerText = cloudInfoCredits > 0 ? `فتح قفل الهوية (رصيد: ${cloudInfoCredits}) ✅` : "طلب تعديل البيانات (فتح القفل)";
+                    render();
                 } else {
-                    document.getElementById('yahya-status').innerText = "الكود غير صحيح أو منتهي!";
+                    document.getElementById('yahya-status').innerText = "الكود غير صحيح!";
                 }
             });
         };
 
-        async function handleAutoInfoUnlock(docId) {
-            await updateDoc(doc(dbFs, "active_keys", docId), { infoCredits: cloudInfoCredits - 1 });
-            let localDb = JSON.parse(localStorage.getItem('GPRO_V41'));
-            if(localDb) { localDb.shop.isConfigured = false; localStorage.setItem('GPRO_V41', JSON.stringify(localDb)); }
-            alert("✅ وافق يحيى على طلبك. يمكنك الآن تعديل اسم المحل والسعر.");
-            location.reload();
-        }
-
-        async function handleAutoFactoryReset(docId) {
-            await updateDoc(doc(dbFs, "active_keys", docId), { resetCredits: cloudResetCredits - 1 });
-            localStorage.removeItem('GPRO_V41');
-            alert("⚠️ تم قبول طلب الفرمتة. سيتم مسح البيانات الآن.");
-            location.reload();
-        }
-
-        window.triggerResetRequest = async () => {
-            if (cloudResetCredits > 0) {
-                 handleAutoFactoryReset( (await getDocs(query(collection(dbFs, "active_keys"), where("key", "==", localStorage.getItem('YAHYA_GPRO_KEY'))))).docs[0].id );
-            } else {
-                if(confirm("إرسال طلب فرمتة ليحيى؟")) {
-                    await addDoc(collection(dbFs, "requests"), { store: db.shop.name || 'غير معروف', storeKey: localStorage.getItem('YAHYA_GPRO_KEY'), type: 'reset', time: serverTimestamp() });
-                    alert("تم إرسال الطلب. انتظر موافقة يحيى...");
-                }
-            }
-        };
-
-        window.triggerInfoRequest = async () => {
-            if (cloudInfoCredits > 0) {
-                handleAutoInfoUnlock( (await getDocs(query(collection(dbFs, "active_keys"), where("key", "==", localStorage.getItem('YAHYA_GPRO_KEY'))))).docs[0].id );
-            } else {
-                if(confirm("إرسال طلب فتح قفل الهوية ليحيى؟")) {
-                    await addDoc(collection(dbFs, "requests"), { store: db.shop.name || 'غير معروف', storeKey: localStorage.getItem('YAHYA_GPRO_KEY'), type: 'info', time: serverTimestamp() });
-                    alert("تم إرسال الطلب. انتظر موافقة يحيى...");
-                }
-            }
-        };
-
         document.getElementById('btnActivate').onclick = () => window.checkSubscription(document.getElementById('yahya-key-input').value);
-        document.getElementById('btnSendOrder').onclick = async () => {
-            let n = document.getElementById('req-name').value, t = document.getElementById('req-tel').value;
-            if(n && t) { await addDoc(collection(dbFs, "requests"), { store: n, phone: t, status: "pending", time: serverTimestamp(), type: 'new' }); alert("تم الإرسال!"); }
-        };
         const savedKey = localStorage.getItem('YAHYA_GPRO_KEY'); if(savedKey) window.checkSubscription(savedKey);
     </script>
 
     <script>
-        let currentFilter = 'all';
         let db = JSON.parse(localStorage.getItem('GPRO_V41')) || {
             shop: { name: "", logo: "", isConfigured: false }, 
             staff: [{u: "مدير", p: "123"}],
-            devices: [], menu: [], shiftLogs: [], currentSales: 0, startDrawer: 0, isShiftOpen: false, defPrice: 2500, currentUser: "", pcHistory: []
+            devices: [], currentSales: 0, startDrawer: 0, isShiftOpen: false, defPrice: 2500, currentUser: "", pcHistory: [], shiftLogs: []
         };
-        let tempLogo = db.shop.logo;
-        let actionTarget = null;
 
         function save() { localStorage.setItem('GPRO_V41', JSON.stringify(db)); render(); }
         
-        function showToast(msg, isWarning = false) {
-            let t=document.createElement('div'); t.className= isWarning ? 'toast warning' : 'toast'; 
-            t.innerText=msg; document.getElementById('toast-container').appendChild(t); 
-            setTimeout(()=>t.remove(),3000);
+        window.handleLogin = () => {
+            let u = document.getElementById('login-u-list').value;
+            let p = document.getElementById('login-p').value;
+            let user = db.staff.find(s => s.u === u && s.p === p);
+            
+            if(user) {
+                db.currentUser = u; 
+                document.getElementById('login-screen').classList.add('hidden');
+                if(!db.shop.isConfigured) document.getElementById('identity-enforcement-screen').classList.remove('hidden');
+                else if(!db.isShiftOpen) document.getElementById('open-shift-screen').classList.remove('hidden');
+                
+                // التحكم بظهور زر الإدارة
+                document.getElementById('nav-admin').style.display = (u === "مدير") ? "flex" : "none";
+                render();
+            } else alert("خطأ في كلمة السر!");
         }
 
-        // تحديث الساعة والتاريخ
-        function updateClock() {
-            const now = new Date();
-            const days = ['الأحد', 'الأثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-            document.getElementById('digital-clock').innerText = now.toLocaleTimeString('en-US', { hour12: false });
-            document.getElementById('day-name').innerText = days[now.getDay()];
-            document.getElementById('date-g').innerText = now.toLocaleDateString('en-GB');
-            // التاريخ الهجري (تقريبي)
-            const options = { year: 'numeric', month: 'numeric', day: 'numeric', calendar: 'islamic-uma' };
-            document.getElementById('date-h').innerText = now.toLocaleDateString('ar-SA-u-ca-islamic-uma', {day:'numeric', month:'numeric', year:'numeric'});
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        window.handleSetupLogo = (input) => {
-            if (input.files && input.files[0]) {
-                let reader = new FileReader();
-                reader.onload = (e) => { tempLogo = e.target.result; };
-                reader.readAsDataURL(input.files[0]);
+        window.addStaff = () => {
+            let n = document.getElementById('staff-name').value;
+            let p = document.getElementById('staff-pass').value;
+            if(n && p) {
+                db.staff.push({u: n, p: p});
+                save();
+                document.getElementById('staff-name').value = "";
+                document.getElementById('staff-pass').value = "";
             }
         };
 
-        window.lockSystemIdentity = () => {
-            let n = document.getElementById('setup-shop-name').value;
-            let p = document.getElementById('setup-hour-price').value;
-            if(!n || !p || !tempLogo) { alert("نقص بيانات!"); return; }
-            db.shop.name = n; db.defPrice = parseInt(p); db.shop.logo = tempLogo; db.shop.isConfigured = true;
-            save(); alert("تم التثبيت ✅"); location.reload();
+        window.changeAdminPass = () => {
+            let p = document.getElementById('admin-new-pass').value;
+            if(p) {
+                db.staff.find(s => s.u === "مدير").p = p;
+                save();
+                alert("تم التغيير");
+            }
         };
 
-        window.handleLogin = () => {
-            let u = document.getElementById('login-u-list').value, p = document.getElementById('login-p').value;
-            let user = db.staff.find(s => s.u === u && s.p === p);
-            if(user) {
-                db.currentUser = u; 
-                document.getElementById('login-screen').style.display='none';
-                if(!db.shop.isConfigured) document.getElementById('identity-enforcement-screen').classList.remove('hidden');
-                else if(!db.isShiftOpen) document.getElementById('open-shift-screen').classList.remove('hidden');
-                if(u !== "مدير") document.getElementById('nav-admin').classList.add('hidden');
-                render();
-            } else alert("كلمة السر خاطئة!");
+        function render() {
+            // تحديث قائمة الموظفين في تسجيل الدخول
+            let list = document.getElementById('login-u-list');
+            list.innerHTML = db.staff.map(s => `<option value="${s.u}">${s.u}</option>`).join('');
+            
+            // تحديث واجهة الإدارة
+            document.getElementById('staff-list').innerHTML = db.staff.map(s => `
+                <div class="admin-item">
+                    <span>${s.u}</span>
+                    ${s.u !== 'مدير' ? `<button onclick="db.staff=db.staff.filter(x=>x.u!=='${s.u}'); save()">حذف</button>` : ''}
+                </div>
+            `).join('');
+            
+            document.getElementById('shop-name-side').innerText = db.shop.name || "G-PRO";
         }
 
-        window.changeAdminPass = () => { let p = document.getElementById('admin-new-pass').value; if(p.length > 2) { db.staff.find(s=>s.u==='مدير').p = p; save(); showToast("تم تحديث الباسورد"); } };
-        window.startShift = () => { db.startDrawer = parseInt(document.getElementById('drawer-amount').value) || 0; db.isShiftOpen = true; db.pcHistory = []; save(); document.getElementById('open-shift-screen').classList.add('hidden'); }
-        window.closeShift = () => { if(confirm("إغلاق؟")) { db.shiftLogs.push({ date: new Date().toLocaleDateString(), user: db.currentUser, sales: db.currentSales }); db.currentSales=0; db.isShiftOpen=false; save(); location.reload(); } }
-        
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('digital-clock').innerText = now.toLocaleTimeString('en-US', { hour12: false });
+        }
+        setInterval(updateClock, 1000);
+
+        window.lockSystemIdentity = () => {
+            db.shop.name = document.getElementById('setup-shop-name').value;
+            db.defPrice = document.getElementById('setup-hour-price').value;
+            db.shop.isConfigured = true;
+            save();
+            location.reload();
+        };
+
+        window.startShift = () => { db.isShiftOpen = true; save(); document.getElementById('open-shift-screen').classList.add('hidden'); };
         window.showPage = (p, btn) => {
             document.querySelectorAll('.page').forEach(x => x.classList.add('hidden'));
             document.getElementById(p+'-page').classList.remove('hidden');
             document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
             btn.classList.add('active');
-        };
-
-        window.setFilter = (f) => { currentFilter = f; document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active-filter')); document.getElementById('filter-'+f).classList.add('active-filter'); render(); };
-        
-        window.deletePC = (id) => {
-            let d = db.devices.find(x => x.id === id);
-            if(d.active) { showToast("لا يمكن حذف جهاز قيد التشغيل!", true); return; }
-            if(confirm(`حذف ${d.name}؟`)) { db.devices = db.devices.filter(x => x.id !== id); save(); }
-        };
-
-        function render() {
-            if(db.shop.logo) { document.getElementById('side-logo-img').src = db.shop.logo; document.getElementById('side-logo-img').style.display = 'block'; document.getElementById('logo-text').style.display = 'none'; }
-            document.getElementById('shop-name-side').innerText = db.shop.name || "G-PRO";
-            document.getElementById('set-shop-name').value = db.shop.name;
-            document.getElementById('set-hour-price').value = db.defPrice;
-            document.getElementById('login-u-list').innerHTML = db.staff.map(s => `<option value="${s.u}">${s.u}</option>`).join('');
-            
-            document.getElementById('sales-view').innerText = (db.currentSales || 0).toLocaleString();
-            document.getElementById('start-drawer-view').innerText = (db.startDrawer || 0).toLocaleString();
-            document.getElementById('total-drawer-view').innerText = ((db.startDrawer || 0) + (db.currentSales || 0)).toLocaleString();
-            
-            document.getElementById('count-all').innerText = db.devices.length;
-            document.getElementById('count-free').innerText = db.devices.filter(x=>!x.active && !x.booked).length;
-            document.getElementById('count-busy').innerText = db.devices.filter(x=>x.active).length;
-            document.getElementById('count-booked').innerText = db.devices.filter(x=>x.booked).length;
-            
-            document.getElementById('sidebar-yahya').style.pointerEvents = db.shop.isConfigured ? 'auto' : 'none';
-            document.getElementById('sidebar-yahya').style.opacity = db.shop.isConfigured ? '1' : '0.5';
-
-            let filtered = db.devices.filter(d => {
-                if(currentFilter === 'free') return !d.active && !d.booked;
-                if(currentFilter === 'busy') return d.active;
-                if(currentFilter === 'booked') return d.booked;
-                return true;
-            });
-
-            document.getElementById('pc-grid').innerHTML = filtered.map(d => `
-                <div class="glass-card" style="border-top:3px solid ${d.active?'var(--neon-green)':(d.booked?'var(--neon-gold)':'var(--neon-blue)')}">
-                    <b>${d.name}</b><br><small>${d.active?d.client:(d.booked?'حجز: '+d.client:'متاح')}</small>
-                    <div style="font-size:1.5rem; margin:10px 0" id="t-${d.id}">00:00:00</div>
-                    ${d.active ? `<button class="btn-blue" onclick="openMenu(${d.id})">🍔 طلب</button><button class="btn-red" onclick="stopSession(${d.id})">تصفية</button>` : 
-                    `<button class="btn-green" onclick="openAction(${d.id}, 'start')">${d.booked?'تفعيل':'بدء'}</button>${!d.booked?`<button class="btn-red" onclick="openAction(${d.id}, 'book')">حجز</button>`:''}`}
-                </div>`).join('');
-
-            document.getElementById('current-pc-sales').innerHTML = (db.pcHistory || []).map(h => `<tr><td>${h.pc}</td><td>${h.amount.toLocaleString()}</td><td>${h.time}</td></tr>`).join('');
-            document.getElementById('shift-logs-body').innerHTML = (db.shiftLogs || []).map(l => `<tr><td>${l.date}</td><td>${l.user}</td><td>${l.sales.toLocaleString()}</td></tr>`).join('');
-            document.getElementById('staff-list').innerHTML = db.staff.map(s => `<div class="admin-item"><span>👤 ${s.u}</span> ${s.u!=='مدير'?`<span onclick="db.staff=db.staff.filter(x=>x.u!='${s.u}'); save()" style="cursor:pointer">✖</span>`:''}</div>`).join('');
-            document.getElementById('admin-menu-list').innerHTML = (db.menu || []).map(m => `<div class="admin-item"><span>🍔 ${m.name} (${m.price})</span><span onclick="db.menu=db.menu.filter(x=>x.id!=${m.id}); save()" style="cursor:pointer">✖</span></div>`).join('');
-            document.getElementById('admin-pc-list').innerHTML = db.devices.map(d => `<div class="admin-item"><span>🖥️ ${d.name}</span><span onclick="deletePC(${d.id})" style="cursor:pointer; color:var(--neon-red); font-weight:bold">حذف ✖</span></div>`).join('');
-        }
-
-        window.addNewPC = () => { db.devices.push({id:Date.now(), name:"جهاز "+(db.devices.length+1), active:false, booked:false, orders:[]}); save(); };
-        window.openModal = (id) => document.getElementById(id).style.display = 'flex';
-        window.closeModal = (id) => document.getElementById(id).style.display = 'none';
-        window.openAction = (id, type) => { actionTarget = id; openModal(type==='start'?'modal-start':'modal-book'); };
-        window.confirmStart = () => { 
-            let d=db.devices.find(x=>x.id===actionTarget); d.active=true; d.booked=false; d.start=Date.now(); 
-            d.client=document.getElementById('c-name').value||"زبون"; d.limit=parseInt(document.getElementById('c-limit').value)||0; 
-            d.alerted=false; d.orders = []; closeModal('modal-start'); save(); 
-        };
-        window.confirmBooking = () => { 
-            let d=db.devices.find(x=>x.id===actionTarget); d.booked=true; d.start=Date.now(); d.limit=30; 
-            d.client=document.getElementById('b-name').value||"حجز"; closeModal('modal-book'); save(); 
         };
 
         render();
