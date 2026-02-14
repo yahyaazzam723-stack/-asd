@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -91,7 +90,9 @@
     <div id="login-screen" class="full-lock hidden">
         <div class="modal-content">
             <h1 style="color:var(--neon-blue)">G-PRO SYSTEM</h1>
-            <select id="login-u-list"></select>
+            <select id="login-u-list">
+                <option value="مدير">مدير</option>
+            </select>
             <input type="password" id="login-p" placeholder="كلمة السر">
             <button class="btn-blue" onclick="handleLogin()">دخول النظام</button>
         </div>
@@ -338,8 +339,9 @@
     <script>
         let currentFilter = 'all';
         let db = JSON.parse(localStorage.getItem('GPRO_V41')) || {
-            shop: { name: "", logo: "", isConfigured: false }, staff: [{u: "مدير", p: "123"}],
-            devices: [], menu: [], shiftLogs: [], currentSales: 0, startDrawer: 0, isShiftOpen: false, defPrice: 25000, currentUser: "", pcHistory: []
+            shop: { name: "", logo: "", isConfigured: false }, 
+            staff: [{u: "مدير", p: "123"}],
+            devices: [], menu: [], shiftLogs: [], currentSales: 0, startDrawer: 0, isShiftOpen: false, defPrice: 2500, currentUser: "", pcHistory: []
         };
         let tempLogo = db.shop.logo;
         let actionTarget = null;
@@ -351,6 +353,20 @@
             t.innerText=msg; document.getElementById('toast-container').appendChild(t); 
             setTimeout(()=>t.remove(),3000);
         }
+
+        // تحديث الساعة والتاريخ
+        function updateClock() {
+            const now = new Date();
+            const days = ['الأحد', 'الأثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+            document.getElementById('digital-clock').innerText = now.toLocaleTimeString('en-US', { hour12: false });
+            document.getElementById('day-name').innerText = days[now.getDay()];
+            document.getElementById('date-g').innerText = now.toLocaleDateString('en-GB');
+            // التاريخ الهجري (تقريبي)
+            const options = { year: 'numeric', month: 'numeric', day: 'numeric', calendar: 'islamic-uma' };
+            document.getElementById('date-h').innerText = now.toLocaleDateString('ar-SA-u-ca-islamic-uma', {day:'numeric', month:'numeric', year:'numeric'});
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
 
         window.handleSetupLogo = (input) => {
             if (input.files && input.files[0]) {
@@ -378,7 +394,7 @@
                 else if(!db.isShiftOpen) document.getElementById('open-shift-screen').classList.remove('hidden');
                 if(u !== "مدير") document.getElementById('nav-admin').classList.add('hidden');
                 render();
-            } else alert("خطأ!");
+            } else alert("كلمة السر خاطئة!");
         }
 
         window.changeAdminPass = () => { let p = document.getElementById('admin-new-pass').value; if(p.length > 2) { db.staff.find(s=>s.u==='مدير').p = p; save(); showToast("تم تحديث الباسورد"); } };
@@ -406,9 +422,11 @@
             document.getElementById('set-shop-name').value = db.shop.name;
             document.getElementById('set-hour-price').value = db.defPrice;
             document.getElementById('login-u-list').innerHTML = db.staff.map(s => `<option value="${s.u}">${s.u}</option>`).join('');
-            document.getElementById('sales-view').innerText = db.currentSales.toLocaleString();
-            document.getElementById('start-drawer-view').innerText = db.startDrawer.toLocaleString();
-            document.getElementById('total-drawer-view').innerText = (db.startDrawer + db.currentSales).toLocaleString();
+            
+            document.getElementById('sales-view').innerText = (db.currentSales || 0).toLocaleString();
+            document.getElementById('start-drawer-view').innerText = (db.startDrawer || 0).toLocaleString();
+            document.getElementById('total-drawer-view').innerText = ((db.startDrawer || 0) + (db.currentSales || 0)).toLocaleString();
+            
             document.getElementById('count-all').innerText = db.devices.length;
             document.getElementById('count-free').innerText = db.devices.filter(x=>!x.active && !x.booked).length;
             document.getElementById('count-busy').innerText = db.devices.filter(x=>x.active).length;
@@ -432,101 +450,26 @@
                     `<button class="btn-green" onclick="openAction(${d.id}, 'start')">${d.booked?'تفعيل':'بدء'}</button>${!d.booked?`<button class="btn-red" onclick="openAction(${d.id}, 'book')">حجز</button>`:''}`}
                 </div>`).join('');
 
-            document.getElementById('current-pc-sales').innerHTML = db.pcHistory.map(h => `<tr><td>${h.pc}</td><td>${h.amount.toLocaleString()}</td><td>${h.time}</td></tr>`).join('');
-            document.getElementById('shift-logs-body').innerHTML = db.shiftLogs.map(l => `<tr><td>${l.date}</td><td>${l.user}</td><td>${l.sales.toLocaleString()}</td></tr>`).join('');
+            document.getElementById('current-pc-sales').innerHTML = (db.pcHistory || []).map(h => `<tr><td>${h.pc}</td><td>${h.amount.toLocaleString()}</td><td>${h.time}</td></tr>`).join('');
+            document.getElementById('shift-logs-body').innerHTML = (db.shiftLogs || []).map(l => `<tr><td>${l.date}</td><td>${l.user}</td><td>${l.sales.toLocaleString()}</td></tr>`).join('');
             document.getElementById('staff-list').innerHTML = db.staff.map(s => `<div class="admin-item"><span>👤 ${s.u}</span> ${s.u!=='مدير'?`<span onclick="db.staff=db.staff.filter(x=>x.u!='${s.u}'); save()" style="cursor:pointer">✖</span>`:''}</div>`).join('');
-            document.getElementById('admin-menu-list').innerHTML = db.menu.map(m => `<div class="admin-item"><span>🍔 ${m.name} (${m.price})</span><span onclick="db.menu=db.menu.filter(x=>x.id!=${m.id}); save()" style="cursor:pointer">✖</span></div>`).join('');
+            document.getElementById('admin-menu-list').innerHTML = (db.menu || []).map(m => `<div class="admin-item"><span>🍔 ${m.name} (${m.price})</span><span onclick="db.menu=db.menu.filter(x=>x.id!=${m.id}); save()" style="cursor:pointer">✖</span></div>`).join('');
             document.getElementById('admin-pc-list').innerHTML = db.devices.map(d => `<div class="admin-item"><span>🖥️ ${d.name}</span><span onclick="deletePC(${d.id})" style="cursor:pointer; color:var(--neon-red); font-weight:bold">حذف ✖</span></div>`).join('');
         }
 
         window.addNewPC = () => { db.devices.push({id:Date.now(), name:"جهاز "+(db.devices.length+1), active:false, booked:false, orders:[]}); save(); };
         window.openModal = (id) => document.getElementById(id).style.display = 'flex';
         window.closeModal = (id) => document.getElementById(id).style.display = 'none';
-
         window.openAction = (id, type) => { actionTarget = id; openModal(type==='start'?'modal-start':'modal-book'); };
-        
         window.confirmStart = () => { 
-            let d=db.devices.find(x=>x.id===actionTarget); 
-            d.active=true; d.booked=false; d.start=Date.now(); 
-            d.client=document.getElementById('c-name').value||"زبون"; 
-            d.limit=parseInt(document.getElementById('c-limit').value)||0; 
-            d.alerted=false; d.orders = []; 
-            closeModal('modal-start'); save(); 
+            let d=db.devices.find(x=>x.id===actionTarget); d.active=true; d.booked=false; d.start=Date.now(); 
+            d.client=document.getElementById('c-name').value||"زبون"; d.limit=parseInt(document.getElementById('c-limit').value)||0; 
+            d.alerted=false; d.orders = []; closeModal('modal-start'); save(); 
         };
-
         window.confirmBooking = () => { 
-            let d=db.devices.find(x=>x.id===actionTarget); 
-            d.booked=true; d.start=Date.now(); d.limit=30; 
-            d.client=document.getElementById('b-name').value||"حجز"; 
-            closeModal('modal-book'); save(); 
+            let d=db.devices.find(x=>x.id===actionTarget); d.booked=true; d.start=Date.now(); d.limit=30; 
+            d.client=document.getElementById('b-name').value||"حجز"; closeModal('modal-book'); save(); 
         };
-
-        window.stopSession = (id) => {
-            let d=db.devices.find(x=>x.id===id); let min = (Date.now() - d.start) / 60000;
-            let pCost = Math.round((min * db.defPrice) / 60); let mCost = d.orders.reduce((a,b)=>a+b.price, 0);
-            let total = pCost + mCost;
-            document.getElementById('invoice-data').innerHTML = `<b>الجهاز:</b> ${d.name}<br><b>الوقت المستغرق:</b> ${Math.ceil(min)} دقيقة<br><b>حساب اللعب:</b> ${pCost.toLocaleString()} ل.س<br><b>حساب المنيو:</b> ${mCost.toLocaleString()} ل.س`;
-            document.getElementById('net-total').innerText = total.toLocaleString() + " ل.س";
-            document.getElementById('confirm-finish-btn').onclick = () => {
-                db.currentSales += total;
-                db.pcHistory.unshift({ pc: d.name, amount: total, time: new Date().toLocaleTimeString('ar-EG') });
-                d.active = false;
-                d.orders = [];
-                closeModal('modal-invoice');
-                save();
-                showToast("تمت التصفية بنجاح");
-            };
-            openModal('modal-invoice');
-        };
-
-        window.openMenu = (id) => {
-            actionTarget = id;
-            document.getElementById('menu-items-list').innerHTML = db.menu.map(m => `
-                <button class="btn-outline" onclick="addOrderToPC(${m.id})">
-                    ${m.name}<br><small>${m.price.toLocaleString()}</small>
-                </button>`).join('');
-            openModal('modal-menu');
-        };
-
-        window.addOrderToPC = (menuId) => {
-            let item = db.menu.find(x => x.id === menuId);
-            let d = db.devices.find(x => x.id === actionTarget);
-            d.orders.push({...item});
-            showToast(`تم إضافة ${item.name}`);
-        };
-
-        window.addMenu = () => {
-            let n = document.getElementById('m-n').value, p = parseInt(document.getElementById('m-p').value);
-            if(n && p) { db.menu.push({id: Date.now(), name: n, price: p}); save(); }
-        };
-
-        window.addStaff = () => {
-            let u = document.getElementById('staff-name').value, p = document.getElementById('staff-pass').value;
-            if(u && p) { db.staff.push({u, p}); save(); }
-        };
-
-        setInterval(() => {
-            const now = new Date();
-            if(document.getElementById('digital-clock')) document.getElementById('digital-clock').innerText = now.toLocaleTimeString('ar-EG');
-            if(document.getElementById('day-name')) document.getElementById('day-name').innerText = now.toLocaleDateString('ar-EG', {weekday: 'long'});
-            if(document.getElementById('date-g')) document.getElementById('date-g').innerText = now.toLocaleDateString('en-GB');
-            if(document.getElementById('date-h')) document.getElementById('date-h').innerText = now.toLocaleDateString('ar-SA');
-
-            db.devices.forEach(d => {
-                if(d.active || d.booked) {
-                    let diff = Date.now() - d.start;
-                    let sec = Math.floor(diff/1000), min = Math.floor(sec/60), hr = Math.floor(min/60);
-                    let display = `${(hr%24).toString().padStart(2,'0')}:${(min%60).toString().padStart(2,'0')}:${(sec%60).toString().padStart(2,'0')}`;
-                    let el = document.getElementById('t-'+d.id);
-                    if(el) el.innerText = display;
-
-                    if(d.limit > 0 && min >= d.limit && !d.alerted) {
-                        showToast(`⚠️ انتهى وقت ${d.name}`, true);
-                        d.alerted = true;
-                    }
-                }
-            });
-        }, 1000);
 
         render();
     </script>
