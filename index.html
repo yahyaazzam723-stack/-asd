@@ -260,17 +260,33 @@
 
         window.checkSubscription = (inputKey) => {
             const q = query(collection(dbFs, "active_keys"), where("key", "==", inputKey));
-            onSnapshot(q, (snap) => {
+            onSnapshot(q, async (snap) => {
                 if (!snap.empty) {
-                    const data = snap.docs[0].data();
+                    const docSnap = snap.docs[0];
+                    const data = docSnap.data();
+
+                    // منطق الحرق: إذا كان الكود مستخدماً وغير مخزن في المتصفح، نمنع الدخول
+                    const locallySaved = localStorage.getItem('YAHYA_GPRO_KEY');
+                    if (data.used && locallySaved !== inputKey) {
+                        alert("⚠️ عذراً، هذا الكود تم استخدامه مسبقاً على جهاز آخر ولا يمكن إعادة تفعيله.");
+                        document.getElementById('yahya-status').innerText = "كود مستخدم مسبقاً!";
+                        return;
+                    }
+
+                    // إذا لم يكن مستخدماً، نقوم بحرقه الآن وتخزينه محلياً
+                    if (!data.used) {
+                        await updateDoc(doc(dbFs, "active_keys", docSnap.id), { used: true });
+                        localStorage.setItem('YAHYA_GPRO_KEY', inputKey);
+                    }
+
                     localStorage.setItem('YAHYA_GPRO_KEY', inputKey);
                     document.getElementById('yahya-lock-screen').style.display = 'none';
                     
                     cloudResetCredits = data.resetCredits || 0;
                     cloudInfoCredits = data.infoCredits || 0;
 
-                    if (cloudInfoCredits > lastKnownInfo && lastKnownInfo !== undefined) handleAutoInfoUnlock(snap.docs[0].id);
-                    if (cloudResetCredits > lastKnownReset && lastKnownReset !== undefined) handleAutoFactoryReset(snap.docs[0].id);
+                    if (cloudInfoCredits > lastKnownInfo && lastKnownInfo !== undefined) handleAutoInfoUnlock(docSnap.id);
+                    if (cloudResetCredits > lastKnownReset && lastKnownReset !== undefined) handleAutoFactoryReset(docSnap.id);
 
                     lastKnownReset = cloudResetCredits;
                     lastKnownInfo = cloudInfoCredits;
@@ -282,6 +298,8 @@
                     
                     const btnI = document.getElementById('yahya-info-btn');
                     if(btnI) btnI.innerText = cloudInfoCredits > 0 ? `فتح قفل الهوية (رصيد: ${cloudInfoCredits}) ✅` : "طلب تعديل البيانات (فتح القفل)";
+                } else {
+                    if(inputKey) document.getElementById('yahya-status').innerText = "كود غير صحيح!";
                 }
             });
         };
